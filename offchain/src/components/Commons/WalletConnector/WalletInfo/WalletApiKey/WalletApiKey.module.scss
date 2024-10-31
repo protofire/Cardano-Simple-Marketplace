@@ -1,0 +1,35 @@
+@use '@example/styles/shared.module.scss';
+
+.walletApiKeyContainer {
+    overflow-y: auto;
+    height: 330px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+// ModalStyles.scss
+.modal {
+    padding: 20px;
+    border-radius: 4px;
+    max-width: 350px;
+    width: 100%;
+    background-color: white;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
