@@ -70,7 +70,20 @@
         }
     }
 }
-
+.elem {
+  width: 50%;
+  height:50%;
+}
+.full_width_header {
+  width: 100%;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: lightblue; /* Color de fondo opcional */
+  color: black; /* Color de texto opcional */
+  z-index: 1000; /* Para que el header esté sobre otros elementos */
+}
 // ModalStyles.scss
 .modal {
     padding: 20px;

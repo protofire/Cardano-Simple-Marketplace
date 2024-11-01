@@ -37,7 +37,8 @@
     "react-notifications-component": "^4.0.1",
     "smart-db": "file:../smart-db.tgz",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@jest/expect": "^29.7.0",
