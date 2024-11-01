@@ -17,7 +17,7 @@ index-state:
 
 packages: 
     Helpers
-    Validators/AlwaysTrue
+    Validators/Market
 
 -- We never, ever, want this.
 write-ghc-environment-files: never

@@ -379,6 +379,18 @@ isTxOutAnInput !txOutRef !info = any (\i -> LedgerApiV2.txInInfoOutRef i == txOu
 
 --------------------------------------------------------------------------------2
 
+{-# INLINEABLE allScriptInputsCount #-}
+allScriptInputsCount :: [LedgerContextsV2.TxInInfo] -> Integer
+allScriptInputsCount =
+    foldl (\c txOutTx -> c + countTxOut txOutTx) 0
+  where
+    countTxOut (LedgerContextsV2.TxInInfo _ (LedgerContextsV2.TxOut addr _ _ _)) = case addr of
+        LedgerApiV2.Address cre _ -> case cre of
+            LedgerApiV2.PubKeyCredential _ -> 0
+            LedgerApiV2.ScriptCredential _ -> 1
+
+--------------------------------------------------------------------------------2
+
 {-# INLINEABLE isDateReached #-}
 isDateReached :: LedgerApiV2.POSIXTime -> LedgerContextsV2.TxInfo -> Bool
 isDateReached !date !info = LedgerIntervalV1.contains (LedgerIntervalV1.from date) $ LedgerApiV2.txInfoValidRange info

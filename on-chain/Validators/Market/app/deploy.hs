@@ -42,7 +42,7 @@ import qualified Helpers.CLI            as CLIHelpers
 import qualified Helpers.Deploy         as DeployHelpers
 import qualified Helpers.OffChain       as OffChainHelpers
 
-import           AlwaysTrueValidator as OnChain (alwaysTrueValidator)
+import           MarketValidator as OnChain (marketValidator)
 
 --------------------------------------------------------------------------------2
 
@@ -88,12 +88,12 @@ runDeploy baseFolder = do
     P.putStrLn $ "Path: " ++ path SystemFilePathPosix.</> folderName
     ------------------------------
     do 
-        P.putStrLn "Generating 'alwaysTrueValidator' Script..."
-        let validator = OnChain.alwaysTrueValidator
+        P.putStrLn "Generating 'marketValidator' Script..."
+        let validator = OnChain.marketValidator
             validator_Hash = OffChainHelpers.hashValidator validator
             validator_Address = OffChainHelpers.addressValidator validator_Hash
-        _ <- DeployHelpers.deployValidator (path SystemFilePathPosix.</> folderName) "alwaysTrueValidator" validator
-        _ <- DeployHelpers.deployValidatorHash (path SystemFilePathPosix.</> folderName) "alwaysTrueValidator" validator_Hash
-        DeployHelpers.deployValidatorAddress (path SystemFilePathPosix.</> folderName) "alwaysTrueValidator" validator_Address
+        _ <- DeployHelpers.deployValidator (path SystemFilePathPosix.</> folderName) "marketValidator" validator
+        _ <- DeployHelpers.deployValidatorHash (path SystemFilePathPosix.</> folderName) "marketValidator" validator_Hash
+        DeployHelpers.deployValidatorAddress (path SystemFilePathPosix.</> folderName) "marketValidator" validator_Address
     ------------------------------
     return ()

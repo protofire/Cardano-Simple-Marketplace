@@ -1,5 +1,5 @@
 cabal-version: 3.4
-name:          AlwaysTrueValidator
+name:          MarketValidator
 version:       0.1.0.0
 author:        Francisco Ciordia Cantarella
 maintainer:    francisco.ciordia.cantarella@gmail.com
@@ -42,20 +42,20 @@ common common-all-tests
 library
   import:          common-all
   hs-source-dirs:  src
-  exposed-modules: AlwaysTrueValidator
+  exposed-modules: MarketValidator
 
-test-suite AlwaysTrueValidatorTest
+test-suite MarketValidatorTest
   import:         common-all-tests
   type:           exitcode-stdio-1.0
-  main-is:        AlwaysTrueValidatorTest.hs
+  main-is:        MarketValidatorTest.hs
   hs-source-dirs: test
-  build-depends:  AlwaysTrueValidator
+  build-depends:  MarketValidator
 
-executable AlwaysTrueValidatorDeploy
+executable MarketValidatorDeploy
   import:         common-all
   main-is:        deploy.hs
   hs-source-dirs: app
-  build-depends:  AlwaysTrueValidator
+  build-depends:  MarketValidator
   build-depends:
     , directory
     , filepath
