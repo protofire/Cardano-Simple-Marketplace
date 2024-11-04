@@ -71,13 +71,11 @@
     }
 }
 .elem {
-  width: 50%;
-  height:50%;
+  padding: 1rem;
 }
 .full_width_header {
   width: 100%;
   padding: 1rem;
-  position: fixed;
   top: 0;
   left: 0;
   background-color: lightblue; /* Color de fondo opcional */

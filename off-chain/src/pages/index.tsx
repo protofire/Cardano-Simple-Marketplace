@@ -5,9 +5,9 @@ import Home from '../components/public/Home/Home';
 const HomePage: NextPage = () => {
     return (
         <>
-            <body>
+            <main >
                 <Home />
-            </body>
+            </main>
         </>
     );
 };

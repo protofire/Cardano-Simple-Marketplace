@@ -1,5 +1,3 @@
-import './global.scss';
-
 import { StoreProvider } from 'easy-peasy';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
@@ -11,22 +9,99 @@ import { AppGeneral, globalStore } from 'smart-db';
 import Layout from '../components/UI/Layout/Layout';
 import { metadata } from './_document';
 // import 'smart-db/dist/styles.css';
+import "styles/global.scss";
+import { Address, Blockfrost, Lucid, MintingPolicy, PolicyId, SpendingValidator, Unit, UTxO } from 'lucid-cardano';
+import { createContext, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import WalletSelectorModal, { Wallet } from '@/components/Commons/WalletConnector/WalletSelectorModal';
+
+export const marketScript: SpendingValidator = {
+  type: 'PlutusV2',
+  script: '59092c590929010000323232323232323232323232323232323232323232323232323232323232323232323232323232323223222325335353550040272233500202120212132533553335734605a00203e2a666ae68c0b00040900ac54cd54cd54ccd5cd18169999aa98138141980d11199a8078158008011a8068151119b80001350022235001222235004223350022480009200235500322222222222200c480000904cd5ce2481164d756c7469706c652073637269707420696e707574730002015333573466e20cc0c088cd400520002235002225333573466e3c00922100133036223350014800088d4008894ccd5cd19b8f0024890010011300600300113006003333553022028223355302502a235001223301f0023355302802d2350012233022002333500137009000380233700002900000099aa981281511a800911980f801199a800919aa981481711a8009119811801180a00080091199808007801000919aa981481711a8009119811801180a8008009998058050010008129aa801911111111111199aa981701a111a80111111a8021119a80112999ab9a3371e02e00226607600c010201040100620146aa00c054266ae7124010f53656c6c6572206e6f7420706169640002002401f00e1615335533535500322222222222253353335530330343302622533500221003100102c25333573466e3c03c0044c0b80040b001080c40ac0904cd5ce2491853656c6c6572205369676e6174757265204d697373696e670002000e1635573a6ea801054cd5ce248118536372697074204164647265737320696e2073656c6c65720016132355333573460546aae740044c8c8c8c848cc00400c008c05cd5d09aba20035333573460586aae740044c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c8c848cccccccccccc00406005805004804003803002401c01400c008c0c0d5d09aba200233302a75c40026ae84004d5d100119981401510009aba1001357440046604eeb8d5d08009aba20035333573460786aae740044c8c8c8c8c848cc0040100094ccd5cd18201aab9d001132323212330010030023025357426ae88008cc095d69aba100135573c00207e6ea8d5d09aba200353335734607c6aae740044c8c8c848cc00400c008c08cd5d09aba20023302375a6ae84004d55cf00081e9baa357420026aae780040ecdd51aba100135744004666042052eb4d5d08009aba200233020022357420026ae88008ccc075d700e1aba100135744004666036eb8068d5d08009aba20023301a017357420026ae88008cc060050d5d08009aba200233016012357420026aae780040acdd51aba100135573c00205204e6ea80044c94ccd5cd18139aab9d00113232321233001003002375a6ae84d5d1001180b9aba100135573c00204c6ea800488ccd5cd19b8f00200101f01a22233355301c0220203355301d0222350012233017002300800133355301c0222235002225335333553025026330182233300a0290020013008028235001223300a002005006100313302400400301f0013355301d02223500122330170023302d2253350011300b003221350022253353300c002008112223300200a0041300600300400223300122533500201d10010172122230030042122230010043300d222300330020012001101a23253335734604000202e2a666ae68c07c004048078d55ce9baa001223232533357346044002224440022a666ae68c0840044c84888c00c010c010d5d09aab9e00215333573460400022244400403e6aae74004dd50009192999ab9a301d35573a00226464642466002006004600a6ae84d5d100118051aba100135573c0020386ea80048c94ccd5cd180e1aab9d00113232323232323232321233330010090070030023301675c6ae84d5d10022999ab9a302500113212223002004357426aae7800854ccd5cd1812000899091118008021bae357426aae7800854ccd5cd1811800889110018111aab9d00137546ae84004d5d1001199803bae006357420026ae88008c030d5d08009aab9e00101b375400266002eb9d69111980f911999aab9f0012017232330193300d300735573a002600c6aae78004c010d5d10019aba10020193756002446603a446666aae7c00480548cc058c014d5d080118019aba2002017375800246464a666ae68c0700044c848888c010014c010d5d09aab9e002153335734603600226424444600400a60126ae84d55cf0010a999ab9a301a0011321222230010053005357426aae7800854ccd5cd180c8008990911118018029bae357426aae78008060d55ce8009baa00123232325333573466e1d200c00211222222200315333573466e1d200a00211222222200415333573466e1d2008002132321222222233001009008375a6ae84d5d128011bae35742a0022a666ae68c0700084c8c848888888cc008024020dd71aba135744a0046eb8d5d0a8008a999ab9a301b002132321222222233006009008375c6ae84d5d1280118049aba15001153335734603400426424444444600e01060126ae84d55cf0018a999ab9a30190021321222222230050083009357426aae7800c0604d55cf0011aab9d0013754002464a666ae68c058d55ce800899191909198008018011bad357426ae88008c010d5d08009aab9e0010153754002464a666ae68c054d55ce80089bae357426aae78004050dd50009109198008018011192999ab9a301335573a002264646424660020060046600e00a6ae84d5d100118029aba100135573c0020246ea80048c8c94ccd5cd180a000899191919190911998008030020019bad357426ae88008dd69aba1001357440046eb4d5d08009aab9e0021533357346026002264244600400660086ae84d55cf0010091aab9d001375400246464a666ae68c04c0044c8488c00400cdd71aba135573c0042a666ae68c0480044c8488c00800cdd71aba135573c0040226aae74004dd50009119192999ab9a3012001130073004357426aae7800854ccd5cd18098008028089aab9d00137540022002201442446004006601c4422444a66a00220044426600a004666aa600e01a00a008002601a442244a66a00200a44266012600800466aa600c01600800220022008442446600200800660124422444a66a00226a006010442666a00a0126008004666aa600e01000a0080022400244004440022a66ae71241035054310016370e90001b8748008dc3a40086e1d200623230010012233003300200200101',
+};
+
+export type MenuClass = 'Buy' | 'Sell';
+
+export type AppState = {
+  // Global
+  lucid?: Lucid;
+  wAddr?: Address;
+  marketAddress: Address;
+  menuClass?: string;
+};
+
+const initialAppState: AppState = {
+  marketAddress: 'undefined',
+  menuClass: 'Buy',
+};
+
+export const AppStateContext = createContext<{
+  appState: AppState;
+  setAppState: Dispatch<SetStateAction<AppState>>;
+}>({ appState: initialAppState, setAppState: () => { } });
 
 export default function MyApp({ Component, pageProps }: AppProps<{ session?: Session }>) {
-    return (
-        <>
-            <Head>
-                <title>{metadata.title}</title>
-            </Head>
-            <SessionProvider session={pageProps.session} refetchInterval={0}>
-                <StoreProvider store={globalStore}>
-                    <AppGeneral />
-                    <ReactNotifications />
-                    <Layout>
-                        <Component {...pageProps} />
-                    </Layout>
-                </StoreProvider>
-            </SessionProvider>
-        </>
-    );
+  const [appState, setAppState] = useState<AppState>(initialAppState);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+
+  const connectLucid = async (wallet: any) => {
+    const lucid = await Lucid.new(new Blockfrost('https://cardano-preview.blockfrost.io/api/v0', "previewbShaxkwvSYcF3grrX7RR5d3BU5xkmY5s"), 'Preview');
+
+    lucid.selectWallet(wallet);
+    setAppState({
+      ...initialAppState,
+      lucid: lucid,
+      wAddr: await lucid.wallet.address(),
+
+      marketAddress: lucid.utils.validatorToAddress(marketScript),
+    });
+  };
+
+  const handleWalletSelect = async (wallet: Wallet) => {
+    try {
+      if (wallet.enable) {
+        const api = await wallet.enable();
+        await connectLucid(api);
+        setShowWalletModal(false);
+      }
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  useEffect(() => {
+    if (appState.lucid) return;
+    setShowWalletModal(true);
+  }, [appState]);
+
+  return (
+    <AppStateContext.Provider value={{ appState, setAppState }}>
+      {showWalletModal && <WalletSelectorModal onSelect={handleWalletSelect} onClose={() => setShowWalletModal(false)} />}
+      <SessionProvider session={pageProps.session} refetchInterval={0}>
+        <StoreProvider store={globalStore}>
+          <AppGeneral />
+          <ReactNotifications />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </StoreProvider>
+      </SessionProvider>
+    </AppStateContext.Provider>
+  );
 }
+
+// export default function MyApp({ Component, pageProps }: AppProps<{ session?: Session }>) {
+//     return (
+//         <>
+//             <SessionProvider session={pageProps.session} refetchInterval={0}>
+//                 <StoreProvider store={globalStore}>
+//                     <AppGeneral />
+//                     <ReactNotifications />
+//                     <Layout>
+//                         <Component {...pageProps} />
+//                     </Layout>
+//                 </StoreProvider>
+//             </SessionProvider>
+//         </>
+//     );
+// }

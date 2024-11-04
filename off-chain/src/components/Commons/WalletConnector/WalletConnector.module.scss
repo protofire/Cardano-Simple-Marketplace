@@ -1,4 +1,17 @@
-@use '@example/styles/shared.module.scss';
+@use '../../../../styles/shared.module.scss';
+.buttom {
+    @apply absolute;
+    @apply justify-center;
+    @apply items-center;
+    @apply right-0;
+    @apply top-5;
+    @apply bg-zinc-50;
+    @apply h-12;
+    @apply w-48;
+    @apply rounded-l-2xl;
+    @apply flex;
+    @apply flex-row;
+}
 
 .walletConnectorContainer {
     overflow-y: auto;
