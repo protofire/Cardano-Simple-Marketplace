@@ -14,15 +14,14 @@ const WalletInfo: React.FC<Props> = ({ walletStore, walletDisconnect }) => {
     //--------------------------------------
     return (
         <>
-            <h2>
+            <h2 className="text-xl font-bold mb-4 text-white">
                 YOUR WALLET [{walletStore.info!.isWalletFromKey === true ? 'Key' : walletStore.info!.isWalletFromSeed === true ? 'Seed' : walletStore.info!.walletNameOrSeedOrKey}]
             </h2>
-            <div className={styles.walletInfo}>
+            <div className="grid gap-y-4 items-center">
                 <ModalUTxOsAndBalance address={walletStore.info!.address} uTxOs={walletStore.uTxOsAtWallet}  showBalance={true}/>
                 <WalletApiKey />
                 <button key={walletStore.info!.pkh + ' disconnect'} className={styles.walletDetails} onClick={async () => await walletDisconnect(false)}>
-                    <Image className={styles.walletImg} src={DISCONNECT.href} alt={'Disconnect'} width={30} height={30}></Image>
-                    <p className={styles.text}>Disconnect Wallet</p>
+                    <p className="text-l font-bold mb-4 text-white">Disconnect Wallet <Image className={styles.walletImg} src={DISCONNECT.href} alt={'Disconnect'} width={20} height={20}></Image></p>
                 </button>
             </div>
         </>

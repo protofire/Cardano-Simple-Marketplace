@@ -17,7 +17,7 @@ export const ModalUTxOsAndBalance = ({ address, uTxOs, showBalance = false }: { 
     //--------------------------------------
     return (
         <>
-            <button onClick={handleOpen}>View {showBalance ? 'Balance' : list.length <= 1 ? 'UTxO' : 'UTxOs'}</button>
+            <button className="text-l font-bold mb-4 text-white" onClick={handleOpen}>View {showBalance ? 'Balance' : list.length <= 1 ? 'UTxO' : 'UTxOs'}</button>
             {isOpen ? (
                 <div className={styles.modal}>
                     <div className={`${styles.main}`}>

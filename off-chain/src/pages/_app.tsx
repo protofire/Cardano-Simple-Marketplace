@@ -76,7 +76,6 @@ export default function MyApp({ Component, pageProps }: AppProps<{ session?: Ses
 
   return (
     <AppStateContext.Provider value={{ appState, setAppState }}>
-      {showWalletModal && <WalletSelectorModal onSelect={handleWalletSelect} onClose={() => setShowWalletModal(false)} />}
       <SessionProvider session={pageProps.session} refetchInterval={0}>
         <StoreProvider store={globalStore}>
           <AppGeneral />

@@ -6,9 +6,9 @@ import LoaderButton from '../LoaderButton/LoaderButton';
 import styles from './WalletConnector.module.scss'; // Assuming you will create a SCSS module
 import WalletInfo from './WalletInfo/WalletInfo';
 import WalletList from './WalletList/WalletList';
+
 import { HiUserCircle } from 'react-icons/hi';
 import { IoReloadCircleSharp } from 'react-icons/io5';
-
 interface Props {
   lucid: Lucid;
 }
@@ -54,15 +54,16 @@ const WalletConnector: React.FC<Props> = ({ lucid }) => {
   //--------------------------------------
   return (
     <>
-      <div className="absolute justify-center items-center right-0 top-5 bg-zinc-50  h-12  w-48 rounded-l-2xl flex flex-row">
-        <HiUserCircle className="text-4xl text-zinc-600" onClick={handleBtnConnectWallet} />
-        <IoReloadCircleSharp className="text-3xl mx-2 text-zinc-600 active:text-zinc-800" onClick={handleBtnConnectWallet} />
-          <p className="text-lg mx-2 text-zinc-800">
-            {walletStore.info ? `...${walletStore.info}` : ""}
-          </p>
-        {walletStore.isConnected === false ? <>Connect Wallet</> : <>Wallet Info</>}
+      <button className={styles.buttonCenterWithLoading}>
+        <HiUserCircle
+          className="text-2xl cursor-pointer hover:text-gray-300"
+          onClick={() => {
+            if (walletStore.isGettingWalletsDone === true) handleBtnConnectWallet();
+          }}
+        />
+        <p className="text-sm font-medium">{walletStore.info?.address ? `...${walletStore.info?.address.substring(102)}` : ''}</p>
         {status === 'loading' || walletStore.isGettingWalletsDone === false || walletStore.isConnecting || walletStore.isLoadingAnyData ? <LoaderButton /> : null}
-      </div>
+      </button>
       <Modal
         isOpen={isWalletConnectorModalOpen}
         onRequestClose={() => setIsWalletConnectorModalOpen(false)}
@@ -70,42 +71,45 @@ const WalletConnector: React.FC<Props> = ({ lucid }) => {
         className={styles.modal}
         overlayClassName={styles.overlay}
       >
-        <div className={styles.walletConnectorContainer}>
-          {walletStore.isConnected === false ? (
-            <>
-              <h2>Connect Wallet</h2>
-              <div className={styles.walletKey}>
-                <div className={styles.subTitle}>Wallet Private Key:</div>
-                <div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-zinc-800 p-10 rounded-lg flex flex-col gap-y-4 items-center max-w-max w-full">
+            {walletStore.isConnected === false ? (
+              <>
+                <h2 className="text-xl font-bold mb-4 text-white">Connect Wallet</h2>
+                <text className="text-l font-bold mb-4 text-white">Wallet Private Key:</text>
+
+                <div className="grid gap-y-4 items-center">
                   <input name="privateKey" value={privateKey ?? ''} onChange={(e) => setPrivateKey(e.target.value)} />
+                  <button
+                    className="bg-green-600 center p-1 rounded text-white"
+                    onClick={async () => {
+                      if (privateKey !== undefined) {
+                        await walletFromKeyConnect(privateKey, createSignedSession, true, false);
+                      }
+                    }}
+                  >
+                    Connect With Key
+                  </button>
                 </div>
-                <button
-                  className={styles.buttonCenterWithLoading}
-                  onClick={async () => {
-                    if (privateKey !== undefined) {
-                      await walletFromKeyConnect(privateKey, createSignedSession, true, false);
-                    }
-                  }}
-                >
-                  Connect With Key
-                </button>
-              </div>
-              <WalletList
-                walletStore={walletStore}
-                walletSelected={walletSelected}
-                walletConnect={walletConnect}
-                walletInstall={walletInstall}
-                walletFromSeedConnect={walletFromSeedConnect}
-                walletFromKeyConnect={walletFromKeyConnect}
-                createSignedSession={createSignedSession}
-              />
-            </>
-          ) : (
-            <>
-              <WalletInfo walletStore={walletStore} walletDisconnect={walletDisconnect} />
-            </>
-          )}
-          <button onClick={() => setIsWalletConnectorModalOpen(false)}>Close</button>
+                <WalletList
+                  walletStore={walletStore}
+                  walletSelected={walletSelected}
+                  walletConnect={walletConnect}
+                  walletInstall={walletInstall}
+                  walletFromSeedConnect={walletFromSeedConnect}
+                  walletFromKeyConnect={walletFromKeyConnect}
+                  createSignedSession={createSignedSession}
+                />
+              </>
+            ) : (
+              <>
+                <WalletInfo walletStore={walletStore} walletDisconnect={walletDisconnect} />
+              </>
+            )}
+            <button className="bg-red-600 center p-1 rounded text-white" onClick={() => setIsWalletConnectorModalOpen(false)}>
+              Close
+            </button>
+          </div>
         </div>
       </Modal>
     </>
