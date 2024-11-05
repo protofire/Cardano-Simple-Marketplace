@@ -24,14 +24,6 @@ import PlutusTx.Prelude (Integer, Maybe (Just, Nothing), error, traceError, trac
 data MarketRedeemer = Buy | Withdraw
 PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
-data SimpleSale = SimpleSale
-    { sellerAddress :: LedgerApiV2.Address -- The main seller Note that we are using address
-    , priceOfAsset :: Integer -- cost of the value in it
-    }
-
-PlutusTx.makeIsDataIndexed ''SimpleSale [('SimpleSale, 0)]
-
-
 {-# INLINEABLE mkMarket #-}
 mkMarket :: PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> ()
 mkMarket datumRaw redeemerRaw ctxRaw =

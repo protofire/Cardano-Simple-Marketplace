@@ -18,6 +18,8 @@ index-state:
 packages: 
     Helpers
     Validators/Market
+    Policies/RedeemerNFT
+
 
 -- We never, ever, want this.
 write-ghc-environment-files: never
