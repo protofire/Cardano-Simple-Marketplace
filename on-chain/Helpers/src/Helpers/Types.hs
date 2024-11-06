@@ -69,13 +69,3 @@ instance Schema.ToSchema LedgerApiV2.MintingPolicy where
 --     toSchema = Schema.FormSchemaUnit
 
 --------------------------------------------------------------------------------2
-
-data SimpleSale = SimpleSale
-  { sellerAddress :: LedgerApiV2.Address -- The main seller Note that we are using address
-  , priceOfAsset :: Integer -- cost of the value in it
-  }
-
-PlutusTx.makeIsDataIndexed
-    ''SimpleSale
-    [ ('SimpleSale, 0)
-    ]

@@ -17,8 +17,7 @@ index-state:
 
 packages: 
     Helpers
-    Validators/Market
-    Policies/RedeemerNFT
+    Market
 
 
 -- We never, ever, want this.
