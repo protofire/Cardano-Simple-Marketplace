@@ -44,8 +44,9 @@ library
   hs-source-dirs:  src
   exposed-modules:  Validators.MarketValidator,
                     Policys.PolicyID,
+                    Policys.PolicyNFT,
                     Deploy,
-                    Types
+                    Types,
   build-depends:
     ,directory
     , filepath
@@ -55,12 +56,12 @@ library
     , plutus-ledger
     , process
 
--- test-suite MarketValidatorTest
---   import:         common-all-tests
---   type:           exitcode-stdio-1.0
---   main-is:        MarketValidatorTest.hs
---   hs-source-dirs: test
---   build-depends:  MarketValidator
+test-suite MarketValidatorTest
+  import:         common-all-tests
+  type:           exitcode-stdio-1.0
+  main-is:        MarketValidatorTest.hs
+  hs-source-dirs: test
+  build-depends:  MarketValidator
 
 executable MarketValidatorDeploy
   import:         common-all

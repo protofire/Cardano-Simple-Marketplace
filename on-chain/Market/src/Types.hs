@@ -71,6 +71,8 @@ type StakeCredentialPubKeyHash = LedgerApiV2.PubKeyHash
 -- --     toSchema = Schema.FormSchemaUnit
 
 --------------------------------------------------------------------------------2
+data MarketRedeemer = Buy | Withdraw
+PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
 newtype SimpleSaleNT = SimpleSaleNT SimpleSale
 

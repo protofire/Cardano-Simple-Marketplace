@@ -13,27 +13,12 @@ module Deploy where
 -- External Imports
 --------------------------------------------------------------------------------2
 
-import qualified Control.Exception as ControlException (throwIO)
-import qualified Control.Monad.IO.Class as MonadIOClass (MonadIO (..))
-import qualified Data.Aeson as DataAeson (FromJSON, ToJSON)
 import qualified Data.List as DataList
-import qualified Data.OpenApi.Schema as DataOpenApiSchema (ToSchema)
-import qualified Data.String as DataString
 import qualified Data.Time as DataTime (defaultTimeLocale, formatTime, getCurrentTime)
-import qualified GHC.Generics as GHCGenerics (Generic)
-import qualified Ledger
-import qualified Ledger.Value as LedgerValue
-import qualified Plutonomy
-import qualified Plutus.V2.Ledger.Api as LedgerApiV2
-import qualified PlutusTx
-import qualified PlutusTx.Builtins.Class as TxBuiltinsClass
 import PlutusTx.Prelude hiding (unless)
-import qualified Schema
 import qualified System.Directory as SystemDirectory
 import qualified System.Environment as SystemEnvironment (getArgs, getProgName)
-import qualified System.FilePath as SystemFilePath
 import qualified System.FilePath.Posix as SystemFilePathPosix
-import qualified System.Process as SystemProcess
 import qualified Prelude as P
 
 --------------------------------------------------------------------------------2
@@ -44,7 +29,8 @@ import qualified Helpers.CLI as CLIHelpers
 import qualified Helpers.Deploy as DeployHelpers
 import qualified Helpers.OffChain as OffChainHelpers
 
-import Policys.PolicyID as PolicyID (policy_ID, policyIdCode)
+import Policys.PolicyID as PolicyID (policy_ID)
+import Policys.PolicyNFT as PolicyNFT (nftPolicyCode)
 import Validators.MarketValidator as MarketValidator (marketValidator)
 
 --------------------------------------------------------------------------------2
@@ -99,10 +85,14 @@ runDeploy baseFolder = do
       _ <- DeployHelpers.deployValidatorHash (path SystemFilePathPosix.</> folderName) "marketValidator" validator_Hash
       DeployHelpers.deployValidatorAddress (path SystemFilePathPosix.</> folderName) "marketValidator" validator_Address
       ------------------------------
-      P.putStrLn "Generating 'paramCheckSignaturePolicy' Script..."
+      P.putStrLn "Generating PolicyID' Script..."
       ------------------------------
       let policy = PolicyID.policy_ID validator_Hash
           policy_CS = OffChainHelpers.getCurSymbolOfPolicy policy
       DeployHelpers.deployMintingPolicy (path SystemFilePathPosix.</> folderName) "PolicyID" policy policy_CS
   ------------------------------
+      P.putStrLn "Generating 'PolicyNFT' Script..."
+      ------------------------------
+      let policyCode = PolicyNFT.nftPolicyCode
+      DeployHelpers.writeCompiledCodeToJsonFile (path SystemFilePathPosix.</> folderName SystemFilePathPosix.</> "NftPolicy.plutus") policyCode
     return ()

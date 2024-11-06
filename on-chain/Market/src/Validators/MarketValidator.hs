@@ -22,12 +22,6 @@ import PlutusTx qualified
 import Helpers.OnChain qualified as OnChainHelpers
 import PlutusTx.Prelude hiding (unless)
 import Types
-    ( SimpleSale(policyID, sellingToken, priceOfAsset, sellerAddress),
-      SimpleSaleNT,
-      getTypeSimpleSaleNT ) 
-
-data MarketRedeemer = Buy | Withdraw
-PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
 {-# INLINEABLE mkMarket #-}
 mkMarket :: BuiltinData -> BuiltinData -> BuiltinData -> ()
