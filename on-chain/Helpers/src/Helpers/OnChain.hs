@@ -1133,6 +1133,12 @@ getTxOut_And_DatumType_From_TxOut_And_CS_And_Address !ctx !txOut !cs !add' !getD
        then Just (txOut, getDatumTypeFromDatum $ getUnsafe_Datum_From_TxOut @datum ctx txOut)
        else Nothing
 
+{-# INLINEABLE getTxOuts_And_DatumTypes_From_TxOuts_By_AC' #-}
+getTxOuts_And_DatumTypes_From_TxOuts_By_AC' :: forall datum. PlutusTx.UnsafeFromData datum => LedgerContextsV2.ScriptContext -> [LedgerApiV2.TxOut] -> LedgerValue.AssetClass -> [(LedgerApiV2.TxOut, datum)]
+getTxOuts_And_DatumTypes_From_TxOuts_By_AC' !ctx !txOuts !ac =
+    [(txOut, getUnsafe_Datum_From_TxOut @datum ctx txOut) | txOut <- txOuts, 
+        isScriptAddress (LedgerApiV2.txOutAddress txOut) && isToken_With_AC_InValue (LedgerApiV2.txOutValue txOut) ac]
+
 {-# INLINEABLE getTxOut_And_DatumType_From_TxOut_And_AC_And_Address #-}
 getTxOut_And_DatumType_From_TxOut_And_AC_And_Address :: forall datum datumType. PlutusTx.UnsafeFromData datum => LedgerContextsV2.ScriptContext -> LedgerApiV2.TxOut -> LedgerValue.AssetClass -> Maybe Ledger.Address -> (datum -> datumType) -> Maybe (LedgerApiV2.TxOut, datumType)
 getTxOut_And_DatumType_From_TxOut_And_AC_And_Address !ctx !txOut !ac !add' !getDatumTypeFromDatum =

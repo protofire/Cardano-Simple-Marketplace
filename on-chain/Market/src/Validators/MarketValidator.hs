@@ -1,10 +1,10 @@
+{-# LANGUAGE BangPatterns #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE BangPatterns#-}
 
 --------------------------------------------------------------------------------2
 {- HLINT ignore "Use camelCase"          -}
@@ -26,50 +26,51 @@ import Types
 {-# INLINEABLE mkMarket #-}
 mkMarket :: BuiltinData -> BuiltinData -> BuiltinData -> ()
 mkMarket datumRaw redeemerRaw ctxRaw =
-------------------------------- Resources --------------------------------------
+    ------------------------------- Resources --------------------------------------
     let !redeemer = PlutusTx.unsafeFromBuiltinData @MarketRedeemer redeemerRaw
         !ctx = PlutusTx.unsafeFromBuiltinData @LedgerContextsV2.ScriptContext ctxRaw
         !info = LedgerContextsV2.scriptContextTxInfo ctx
         !datum_In = PlutusTx.unsafeFromBuiltinData @SimpleSale datumRaw
 
         !input_TxOut_BeingValidated = OnChainHelpers.getUnsafe_Own_Input_TxOut ctx
-        !callOptionValidatorAddress = LedgerApiV2.txOutAddress input_TxOut_BeingValidated
+        !marketValidatorAddress = LedgerApiV2.txOutAddress input_TxOut_BeingValidated
         ------------------
-        !policyID_AC = policyID datum_In 
+        !policyID_AC = policyID datum_In
 
-        !inputs_Own_TxOuts =
-            [ LedgerApiV2.txInInfoResolved txInfoInput | txInfoInput <- LedgerApiV2.txInfoInputs info,
-            let address = LedgerApiV2.txOutAddress (LedgerApiV2.txInInfoResolved txInfoInput)
-            in OnChainHelpers.isScriptAddress address && address == callOptionValidatorAddress
+        !inputsOwnTxOuts =
+            [ LedgerApiV2.txInInfoResolved txInfoInput | txInfoInput <- LedgerApiV2.txInfoInputs info, let address = LedgerApiV2.txOutAddress (LedgerApiV2.txInInfoResolved txInfoInput)
+                                                                                                        in OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
             ]
-        !outputs_Own_TxOuts =
+        !outputsOwnTxOuts =
             [ txOut | txOut <- LedgerApiV2.txInfoOutputs info, let address = LedgerApiV2.txOutAddress txOut
-                                                                in OnChainHelpers.isScriptAddress address && address == callOptionValidatorAddress
+                                                                in OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
             ]
-        !output_Own_TxOut_And_SimpleSale_Datum = case OnChainHelpers.getTxOuts_And_DatumTypes_From_TxOuts_By_AC
-            @SimpleSaleNT
+
+        !input_Own_TxOut_And_SimpleSale_Datum = case OnChainHelpers.getTxOuts_And_DatumTypes_From_TxOuts_By_AC'
             @SimpleSale
             ctx
-            outputs_Own_TxOuts
-            policyID_AC
-            getTypeSimpleSaleNT of
-            [x] -> x
-            _ -> traceError "Expected exactly one SimpleSale output"
-        !callOption_Datum_Out = OnChainHelpers.getDatum_In_TxOut_And_Datum output_Own_TxOut_And_SimpleSale_Datum
---------------------------------- Buy ------------------------------------------
+            inputsOwnTxOuts
+            policyID_AC of
+              [x] -> x
+              _ -> traceError "Expected exactly one SimpleSale input"
+
+        !callOption_Datum_Out = OnChainHelpers.getDatum_In_TxOut_And_Datum input_Own_TxOut_And_SimpleSale_Datum
+
+        --------------------------------- Buy ------------------------------------------
         !validateBuyNFTSimpleSale =
-            traceIfFalse "Premium not paid" premiumPaid
-                && traceIfFalse "Multiple script inputs" (OnChainHelpers.allScriptInputsCount (LedgerContextsV2.txInfoInputs info) == 1)
-                && traceIfFalse "not isCorrect_Output_SimpleSale_Datum" isCorrect_Output_SimpleSale_Datum
-                && traceIfFalse "not isCorrect_Output_SimpleSale_Value" isCorrect_Output_SimpleSale_Value
+            traceIfFalse "Seller not paid" sellerPaid
+                && traceIfFalse "Expected one input" (length inputsOwnTxOuts == 1)
+                && traceIfFalse "Expected no outputs" (null outputsOwnTxOuts)
+                && traceIfFalse "not isCorrect_Output_SimpleSale_Datum" isCorrect_Input_SimpleSale_Datum
+                && traceIfFalse "not isCorrect_Output_SimpleSale_Value" isCorrect_Input_SimpleSale_Value
           where
-            isCorrect_Output_SimpleSale_Datum :: Bool
-            !isCorrect_Output_SimpleSale_Datum =
+            isCorrect_Input_SimpleSale_Datum :: Bool
+            !isCorrect_Input_SimpleSale_Datum =
                 let !callOption_Datum_Out_Control = datum_In
-                in callOption_Datum_Out `OnChainHelpers.isUnsafeEqDatums` callOption_Datum_Out_Control
+                 in callOption_Datum_Out `isEqSimpleSale` callOption_Datum_Out_Control
             ------------------
-            isCorrect_Output_SimpleSale_Value :: Bool
-            !isCorrect_Output_SimpleSale_Value =
+            isCorrect_Input_SimpleSale_Value :: Bool
+            !isCorrect_Input_SimpleSale_Value =
                 let
                     ---------------------
                     !policyIDToken = LedgerValue.assetClassValue policyID_AC 1
@@ -78,26 +79,26 @@ mkMarket datumRaw redeemerRaw ctxRaw =
                     ---------------------
                     !valueFor_SimpleSale_Datum_Out_Control = policyIDToken <> sellingValue
                     ---------------------
-                    !valueOf_SimpleSale_Out = OnChainHelpers.getValue_In_TxOut_And_Datum output_Own_TxOut_And_SimpleSale_Datum
+                    !valueOf_SimpleSale_Out = OnChainHelpers.getValue_In_TxOut_And_Datum input_Own_TxOut_And_SimpleSale_Datum
                  in
                     valueOf_SimpleSale_Out `OnChainHelpers.isEqValue` valueFor_SimpleSale_Datum_Out_Control
+            sellerPaid :: Bool
+            !sellerPaid =
+                LedgerContextsV2.valuePaidTo info (sellerAddress datum_In)
+                    == LedgerApiV2.singleton LedgerApiV2.adaSymbol LedgerApiV2.adaToken (priceOfAsset datum_In)
 
-            premiumPaid :: Bool
-            !premiumPaid = LedgerContextsV2.valuePaidTo info (sellerAddress datum_In) == LedgerApiV2.singleton LedgerApiV2.adaSymbol LedgerApiV2.adaToken (priceOfAsset datum_In)
---------------------------------- Withdraw -------------------------------------
-        !validateSellerGetBack =
+        --------------------------------- Withdraw -------------------------------------
+        !validateSellerWithdraw =
             traceIfFalse "Owner not signed" signedBySeller
           where
-
             signedBySeller :: Bool
             !signedBySeller = LedgerContextsV2.txSignedBy info $ sellerAddress datum_In
-                  
-------------------------------- Conditions -------------------------------------
-    in if traceIfFalse "Expected exactly one SellOffer input" (length inputs_Own_TxOuts == 1)
-      && (case redeemer of
-            Buy -> validateBuyNFTSimpleSale
-            Withdraw -> validateSellerGetBack
-        )
+     in ------------------------------- Conditions -------------------------------------
+        if traceIfFalse "Expected exactly one SellOffer input" (length inputsOwnTxOuts == 1)
+            && ( case redeemer of
+                    Buy -> validateBuyNFTSimpleSale
+                    Withdraw -> validateSellerWithdraw
+               )
             then ()
             else error ()
 

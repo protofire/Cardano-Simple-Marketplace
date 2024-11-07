@@ -7,8 +7,8 @@
 module Main where
 
 import Control.Monad (Monad (return), replicateM, unless, void)
-import PlutusTx.Prelude (Bool (False, True), Eq ((==)), Maybe (..), ($), (&&), (+), (++), (-), (.))
-import Prelude (IO, Semigroup ((<>)), Show (show), mconcat)
+import PlutusTx.Prelude (Bool, Eq ((==)), ($), (&&), (+), (-), (.))
+import Prelude (IO, Semigroup ((<>)), mconcat)
 
 import Codec.Serialise (Serialise, serialise)
 import qualified Data.ByteString.Lazy as BSL
@@ -22,18 +22,19 @@ import qualified Test.Tasty as Tasty
 
 import qualified Cardano.Api as Api
 import qualified Cardano.Api.Shelley as ApiShelley
-import qualified PlutusTx.Builtins as Builtins
 import PlutusTx.Builtins.Internal as BuiltinsInternal
+    ( BuiltinByteString(BuiltinByteString) )
 
-import Types
+import Types ( marketID_TN, MarketRedeemer(..), SimpleSale(..) )
 
 import Policys.PolicyID
-import Policys.PolicyNFT
-import Validators.MarketValidator
+    ( policy_ID,
+      PolicyIDRedeemer(..),
+      PolicyRedeemerBurnIDType(PolicyRedeemerBurnIDType),
+      PolicyRedeemerMintIDType(PolicyRedeemerMintIDType) )
+import Policys.PolicyNFT ( policy_NFT, NFTRedeemer(Mint) )
+import Validators.MarketValidator ( marketValidator )
 
-import Debug.Trace (traceM)
-import qualified Helpers.OffChain as HelpersOffChain
-import qualified Helpers.OnChain as HelpersOnChain
 
 ---------------------------------------------------------------------------------------------------
 ------------------------------------------ TESTING ------------------------------------------------
@@ -47,15 +48,14 @@ main = Tasty.defaultMain $ do
             "End to End situations"
             [ good "Minting NFT works" testMintNFT
             , good "Selling the NFT works" testSellNFT
-            , good "Buy Call Option works" testBuyCallOption
+            , good "Buy NFT works" testBuyNFT
             , good "Withdraw Call Option works" testWithdraw
             ]
         , Tasty.testGroup
             "Must fail situations"
-            [ good "Minting the same NFT twice fails" testMintNFTTwice
-            , good "Selling the NFT with bad token name" testBadSellNFT
-            , good "Buy Call Option without pay" testBuyCallOptionWithoutPay
-            , good "Try to get back the call option of someone else" testTryStoleWithdraw
+            [ bad "Minting the same NFT twice fails" testMintNFTTwice
+            , bad "Buy NFT without pay" testBuyNFTWithoutPay
+            , bad "Try to get back the call option of someone else" testTryStoleWithdraw
             ]
         ]
   where
@@ -84,7 +84,7 @@ setupUsers = replicateM 4 $ Model.newUser $ Model.ada (Model.Lovelace 1_000_000_
 --------------------------------------------------------------------------------
 --------------------- TESTING MINTING NFT --------------------------------------
 -- NFT Minting Policy's script
--- nftScript :: LedgerApiV2.TxOutRef -> Model.TypedPolicy NFTRedeemer
+nftScript :: LedgerApiV2.TxOutRef -> Model.TypedPolicy NFTRedeemer
 nftScript ref = Model.TypedPolicy . Model.toV2 $ policy_NFT ref
 
 mintNFTTx :: LedgerApiV2.TxOutRef -> LedgerApiV2.TxOut -> LedgerApiV2.Value -> LedgerApiV2.PubKeyHash -> Model.Tx
@@ -140,30 +140,29 @@ policyIDScript :: LedgerApiV2.ValidatorHash -> PolicyID
 policyIDScript callOptionValidatorHash = Model.TypedPolicy . Model.toV2 $ policy_ID callOptionValidatorHash
 
 sellNFTx :: Model.UserSpend -> SimpleSale -> PolicyID -> LedgerApiV2.Value -> Model.Tx
-sellNFTx sp dat policyId val =
+sellNFTx sp dat policy val =
     mconcat
         [ Model.userSpend sp
-        , -- , Model.refInputInline callOptionValidatorHash
-          Model.mintValue policyId (PolicyRedeemerMintID PolicyRedeemerMintIDType) (LedgerValueV1.assetClassValue (policyID dat) 1)
+        , Model.mintValue policy (PolicyRedeemerMintID PolicyRedeemerMintIDType) (LedgerValueV1.assetClassValue (policyID dat) 1)
         , Model.payToScript contractValidator (Model.InlineDatum dat) val
         ]
 
 --
-sellNFT :: IsGood -> LedgerApiV2.PubKeyHash -> LedgerValueV1.AssetClass -> Model.Run (ContractValidator, PolicyID, SimpleSale)
-sellNFT isGood u1 nftAC = do
+sellNFT :: LedgerApiV2.PubKeyHash -> LedgerValueV1.AssetClass -> Model.Run (ContractValidator, PolicyID, SimpleSale)
+sellNFT u1 nftAC = do
     let nftV = LedgerValueV1.assetClassValue nftAC 1
         callOptionValidatorHash = validatorHash' marketValidator
         policyId = policyIDScript callOptionValidatorHash
+        -- now = 2000
         ---------------------
         policyID_CS = Model.scriptCurrencySymbol policyId
         policyID_AC = LedgerValue.AssetClass (policyID_CS, marketID_TN)
         policyID_Mint_Value = LedgerValueV1.assetClassValue policyID_AC 1
         ---------------------
-        callOptionUTxO_Value = nftV <> policyID_Mint_Value
         ---------------------
         datum =
             SimpleSale{sellerAddress = u1, policyID = policyID_AC, sellingToken = nftAC, priceOfAsset = 5_000_000}
-        userSpendValue = nftV 
+        userSpendValue = nftV
         mintingTxValues = policyID_Mint_Value
 
     sp <- Model.spend u1 userSpendValue
@@ -173,14 +172,9 @@ sellNFT isGood u1 nftAC = do
 
     v1 <- Model.valueAt u1
     utxos1 <- Model.valueAt contractValidator
-    -- traceM $ "v1 " ++ show v1
-    -- traceM $ "utxo1 " ++ show utxos1
-    --
-    -- traceM $ "v1 " ++ show ( Model.adaValue (1000000000 - callOptionUTxO_MinADA))
-    -- traceM $ "utxo1 " ++ show ( Model.adaValue 1 <> rightsNFT_Mint_Value <> nftV)
-    -- traceM $ "utxo2 " ++ show ( Model.adaValue (dMinADA datum))
+
     unless
-        ( v1 == Model.adaValue (1000000000)
+        ( v1 == Model.adaValue 1000000000
             && utxos1 == (userSpendValue <> mintingTxValues)
         )
         $ Model.logError "Final balances are incorrect"
@@ -197,131 +191,118 @@ testSellNFT = do
     -- Mint NFT
     nftAC <- mintNFT u1
     -- Sell NFT
-    void $ sellNFT True u1 nftAC
+    void $ sellNFT u1 nftAC
 
-testBadSellNFT :: Model.Run ()
-testBadSellNFT = do
-    [u1, _, _, _] <- setupUsers
-    -- Mint NFT
-    nftAC <- mintNFT u1
-    void $ sellNFT False u1 nftAC
+--------------------------------------------------------------------------------
+---------------------- TESTING Exercise Call Option ----------------------------
+data CaseExerciseCallOption = BuyNFT | BuyNFTWithoutPay
 
---
--- ----------------------------------------------------------------------------------------------------------
--- -------------------------------------- TESTING Buy Call Option -------------------------------------------
+buyNFTx :: CaseExerciseCallOption -> Model.UserSpend -> LedgerApiV2.PubKeyHash -> SimpleSale -> ContractValidator -> PolicyID -> LedgerApiV2.TxOutRef -> Model.Tx
+buyNFTx option sp buyer datum contract policy ref =
+    case option of
+        BuyNFT ->
+            mconcat
+                [ Model.userSpend sp
+                , Model.spendScript contract ref Buy datum
+                , Model.payToKey (sellerAddress datum) $ Model.adaValue (priceOfAsset datum)
+                , Model.payToKey buyer (LedgerValueV1.assetClassValue (sellingToken datum) 1)
+                , Model.mintValue policy (PolicyRedeemerBurnID PolicyRedeemerBurnIDType) (LedgerValueV1.assetClassValue (policyID datum) (-1))
+                ]
+        BuyNFTWithoutPay ->
+            mconcat
+                [ Model.spendScript contract ref Buy datum
+                , Model.payToKey buyer (LedgerValueV1.assetClassValue (sellingToken datum) 1)
+                , Model.mintValue policy (PolicyRedeemerBurnID PolicyRedeemerBurnIDType) (LedgerValueV1.assetClassValue (policyID datum) (-1))
+                ]
 
-buyNFTTx :: Model.UserSpend -> SimpleSale -> ContractValidator -> LedgerApiV2.TxOutRef -> LedgerApiV2.TxOutRef -> Model.Tx
-buyNFTTx sp datum validator ref datumRef =
-    mconcat
-        [ Model.userSpend sp
-        , Model.spendScript validator ref Buy datum
-        , Model.refInputInline datumRef
-        , Model.payToKey (sellerAddress datum) $ Model.adaValue (priceOfAsset datum)
-        , Model.payToScript validator (Model.InlineDatum datum) (LedgerValueV1.assetClassValue (sellingToken datum) 1)
-        ]
-
-buyNFT :: LedgerApiV2.PubKeyHash -> ContractValidator -> SimpleSale -> Model.Run ()
-buyNFT user contract datum = do
+buyNFT :: CaseExerciseCallOption -> LedgerApiV2.PubKeyHash -> ContractValidator -> PolicyID -> SimpleSale -> Model.Run ()
+buyNFT option user contract policy datum = do
     [(ref, _)] <- Model.utxoAt contract
-    sp <- Model.spend user $ Model.adaValue (priceOfAsset datum)
+    sp <-
+        Model.spend user $
+            Model.adaValue (priceOfAsset datum)
 
     timeRange <- Model.currentTimeRad 100
-    [(refDatum, _)] <- Model.utxoAt contract
-    tx <- Model.validateIn timeRange $ buyNFTTx sp datum contract ref refDatum 
+    tx <- Model.validateIn timeRange $ buyNFTx option sp user datum contract policy ref
     Model.submitTx user tx
 
     v1 <- Model.valueAt (sellerAddress datum)
     v2 <- Model.valueAt user
 
-    -- traceM $ "va1 " ++ show v1
-    -- traceM $ "v21 " ++ show v2
-    -- traceM $ "utxo1 " ++ show utxo1
-    -- traceM $ "utxo2 " ++ show utxo2
     unless
         ( v1 == Model.adaValue (1000000000 + priceOfAsset datum)
             && v2 == Model.adaValue (1000000000 - priceOfAsset datum) <> LedgerValueV1.assetClassValue (sellingToken datum) 1
         )
         $ Model.logError "Final balances are incorrect"
 
-testBuyCallOption :: Model.Run ()
-testBuyCallOption = do
+testBuyNFT :: Model.Run ()
+testBuyNFT = do
     [u1, u2, _, _] <- setupUsers
     -- Mint NFT
     nftAC <- mintNFT u1
     -- Sell NFT
-    (contract, _, datum) <- sellNFT True u1 nftAC
-    -- Buy Call Options
-    void $ buyNFT u2 contract datum
+    (contract, policy, datum) <- sellNFT u1 nftAC
+    -- Buy NFTs
+    void $ buyNFT BuyNFT u2 contract policy datum
 
-buyNFTWithoutPayTx :: LedgerApiV2.PubKeyHash -> SimpleSale -> ContractValidator -> LedgerApiV2.TxOutRef -> LedgerApiV2.TxOutRef -> LedgerApiV2.Value -> Model.Tx
-buyNFTWithoutPayTx buyer datum validator ref datumRef rightNFT =
-    mconcat
-        [ Model.spendScript validator ref Buy datum
-        , Model.refInputInline datumRef
-        , Model.payToKey buyer rightNFT
-        , Model.payToScript validator (Model.InlineDatum datum) (LedgerValueV1.assetClassValue (sellingToken datum) 1)
-        ]
-
-buyNFTWithoutPay :: LedgerApiV2.PubKeyHash -> ContractValidator -> SimpleSale -> Model.Run ()
-buyNFTWithoutPay user contract datum = do
-    [(ref, _)] <- Model.utxoAt contract
-    [(refDatum, _)] <- Model.utxoAt contract
-    let rightNFT = LedgerValueV1.assetClassValue (sellingToken datum) 1
-        tx = buyNFTWithoutPayTx user datum contract ref refDatum rightNFT
-    Model.submitTx user tx
-
-    v1 <- Model.valueAt (sellerAddress datum)
-    v2 <- Model.valueAt user
-    utxo <- Model.valueAt contract
-    unless
-        ( v1 == Model.adaValue (1000000000)
-            && utxo == LedgerValueV1.assetClassValue (sellingToken datum) 1
-            && v2 == Model.adaValue 1000000000 <> LedgerValueV1.assetClassValue (sellingToken datum) 1
-        )
-        $ Model.logError "Final balances are incorrect"
-
-testBuyCallOptionWithoutPay :: Model.Run ()
-testBuyCallOptionWithoutPay = do
+testBuyNFTWithoutPay :: Model.Run ()
+testBuyNFTWithoutPay = do
     [u1, u2, _, _] <- setupUsers
     -- Mint NFT
     nftAC <- mintNFT u1
-    -- Sell NFT
-    (contract,  _, datum) <- sellNFT True u1 nftAC
-    -- Buy Call Options
-    void $ buyNFTWithoutPay u2 contract datum
+    -- Buy NFTs
+    (contract, policy, datum) <- sellNFT u1 nftAC
+    -- Buy NFTs
+    -- Buy NFT
+    void $ buyNFT BuyNFTWithoutPay u2 contract policy datum
 
 -- ----------------------------------------------------------------------------------------------------------
 -- -------------------------------------- TESTING Get back call option---------------------------------------
---
-withdrawTx :: SimpleSale -> ContractValidator -> LedgerApiV2.TxOutRef -> LedgerApiV2.TxOutRef -> Model.Tx
-withdrawTx datum contract ref datumRef =
-    mconcat
-        [ Model.spendScript contract ref Withdraw datum
-        , Model.refInputInline datumRef
-        , Model.payToKey (sellerAddress datum) $ LedgerValueV1.assetClassValue (sellingToken datum) 1
-        ]
+data CaseWithdraw = WithdrawCase | WithdrawOcuppedCase
 
-exerciseWithdraw :: IsGood -> LedgerApiV2.PubKeyHash -> ContractValidator -> SimpleSale -> Model.Run ()
-exerciseWithdraw isGood user contract datum = do
+getBackTx :: CaseWithdraw -> SimpleSale -> ContractValidator -> PolicyID -> LedgerApiV2.TxOutRef -> Model.Tx
+getBackTx option datum contract policy ref =
+    case option of
+        WithdrawCase ->
+            mconcat
+                [ Model.spendScript contract ref Withdraw datum
+                , Model.payToKey
+                    (sellerAddress datum)
+                    (LedgerValueV1.assetClassValue (sellingToken datum) 1)
+                , Model.mintValue
+                    policy
+                    (PolicyRedeemerBurnID PolicyRedeemerBurnIDType)
+                    (LedgerValueV1.assetClassValue (policyID datum) (-1))
+                ]
+        WithdrawOcuppedCase ->
+            mconcat
+                [ Model.spendScript contract ref Withdraw datum
+                , Model.payToKey (sellerAddress datum) $ LedgerValueV1.assetClassValue (sellingToken datum) 1
+                , Model.mintValue policy (PolicyRedeemerBurnID PolicyRedeemerBurnIDType) (LedgerValueV1.assetClassValue (policyID datum) (-1))
+                ]
+
+exerciseWithdraw :: CaseWithdraw -> LedgerApiV2.PubKeyHash -> ContractValidator -> PolicyID -> SimpleSale -> Model.Run ()
+exerciseWithdraw isOcuped user contract policy datum = do
     [(ref, _)] <- Model.utxoAt contract
-    [(refDatum, _)] <- Model.utxoAt contract
     timeRange <- Model.currentTimeRad 100
-    tx <-
-        Model.validateIn timeRange $
-            if isGood
-                then withdrawTx datum contract ref refDatum
-                else occupiedWithdrawTx datum contract ref refDatum
+    tx <- Model.validateIn timeRange $ getBackTx isOcuped datum contract policy ref
     Model.submitTx user tx
 
     v1 <- Model.valueAt (sellerAddress datum)
-    if isGood
-        then
+    case isOcuped of
+        WithdrawCase ->
             unless
-                (v1 == Model.adaValue 1000000000 <> LedgerValueV1.assetClassValue (sellingToken datum) 1)
+                ( v1
+                    == Model.adaValue 1000000000
+                        <> LedgerValueV1.assetClassValue (sellingToken datum) 1
+                )
                 $ Model.logError "Final balances are incorrect"
-        else
+        WithdrawOcuppedCase ->
             unless
-                (v1 == Model.adaValue (1000000000 + priceOfAsset datum) <> LedgerValueV1.assetClassValue (sellingToken datum) 1)
+                ( v1
+                    == Model.adaValue (1000000000 + priceOfAsset datum)
+                        <> LedgerValueV1.assetClassValue (sellingToken datum) 1
+                )
                 $ Model.logError "Final balances are incorrect"
 
 testWithdraw :: Model.Run ()
@@ -330,30 +311,9 @@ testWithdraw = do
     -- Mint NFT
     nftAC <- mintNFT u1
     -- Sell NFT
-    (contract, _, datum) <- sellNFT True u1 nftAC
-    -- Withdraw Call Options
-    void $ exerciseWithdraw True u1 contract datum 
-
-occupiedWithdrawTx :: SimpleSale -> ContractValidator -> LedgerApiV2.TxOutRef -> LedgerApiV2.TxOutRef -> Model.Tx
-occupiedWithdrawTx datum contract ref datumRef =
-    mconcat
-        [ Model.spendScript contract ref Withdraw datum
-        , Model.refInputInline datumRef
-        , Model.payToKey (sellerAddress datum) $ LedgerValueV1.assetClassValue (sellingToken datum) 1
-        ]
-
-testOccupiedWithdraw :: Model.Run ()
-testOccupiedWithdraw = do
-    [u1, u2, _, _] <- setupUsers
-    -- Mint NFT
-    nftAC <- mintNFT u1
-    -- Sell NFT
-    (contract, policyNft, datum) <- sellNFT True u1 nftAC
-    -- Buy Call Options
-    _ <- buyNFT u2 contract datum
-    -- Withdraw Call Options
-    void $ exerciseWithdraw False u1 contract datum 
-
+    (contract, policy, datum) <- sellNFT u1 nftAC
+    -- Get Back Call Options
+    void $ exerciseWithdraw WithdrawCase u1 contract policy datum
 
 testTryStoleWithdraw :: Model.Run ()
 testTryStoleWithdraw = do
@@ -361,6 +321,6 @@ testTryStoleWithdraw = do
     -- Mint NFT
     nftAC <- mintNFT u1
     -- Sell NFT
-    (contract, policyNft, datum) <- sellNFT True u1 nftAC
-    -- Withdraw Call Options
-    void $ exerciseWithdraw True u2 contract datum 
+    (contract, policy, datum) <- sellNFT u1 nftAC
+    -- Get Back Call Options
+    void $ exerciseWithdraw WithdrawCase u2 contract policy datum
