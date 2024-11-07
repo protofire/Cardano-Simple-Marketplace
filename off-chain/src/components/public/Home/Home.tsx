@@ -1,8 +1,8 @@
 import { useContext, useState } from 'react';
 
-import { ClaimDummyTxParams, CreateDummyTxParams, UpdateDummyTxParams } from '@example/src/lib/Commons/Constants/transactions';
-import { DummyEntity } from '@example/src/lib/SmartDB/Entities/Dummy.Entity';
-import { DummyApi } from '@example/src/lib/SmartDB/FrontEnd/Dummy.FrontEnd.Api.Calls';
+import { SellMarketNFTTxParams, BuyMarketNFTTxParams, WithdrawMarketNFTTxParams} from '@example/src/lib/Commons/Constants/transactions';
+import { MarketNFTEntity } from '@example/src/lib/SmartDB/Entities/MarketNFT.Entity';
+import { MarketNFTApi } from '@example/src/lib/SmartDB/FrontEnd/MarketNFT.FrontEnd.Api.Calls';
 import Modal from 'react-modal';
 import {
   ADA_UI,
@@ -35,8 +35,8 @@ export default function Home() {
   const { appState, setAppState } = useContext(AppStateContext);
   const [showWalletModal, setShowWalletModal] = useState(false);
   //--------------------------------------
-  const [list, setList] = useState<DummyEntity[]>();
-  const [selectedItem, setSelectedItem] = useState<DummyEntity>();
+  const [list, setList] = useState<MarketNFTEntity[]>();
+  const [selectedItem, setSelectedItem] = useState<MarketNFTEntity>();
   //--------------------------------------
   const { wAddr, menuClass, marketAddress } = appState;
   //--------------------------------------
@@ -65,18 +65,18 @@ export default function Home() {
     //----------------------------
     try {
       //----------------------------
-      await DummyApi.syncWithAddressApi(DummyEntity, marketAddress, true);
-      const list: DummyEntity[] = await DummyApi.getAllApi_({
+      await MarketNFTApi.syncWithAddressApi(MarketNFTEntity, marketAddress, true);
+      const list: MarketNFTEntity[] = await MarketNFTApi.getAllApi_({
         fieldsForSelect: {},
         loadRelations: { smartUTxO_id: true },
       });
       setList(list);
       //----------------------------
-      pushSucessNotification(`Dummy Sync`, 'Syncronization complete!', false);
+      pushSucessNotification(`MarketNFT Sync`, 'Syncronization complete!', false);
       //----------------------------
     } catch (e) {
       console.error(e);
-      pushWarningNotification(`Dummy Sync`, 'Syncronization Error' + e);
+      pushWarningNotification(`MarketNFT Sync`, 'Syncronization Error' + e);
     }
     //----------------------------
     setIsLoadingSync(false);
@@ -138,7 +138,7 @@ export default function Home() {
             )}
           </button>
           <div className="mt-4 text-gray-700">
-            Smart DB - Dummy Entity{' '}
+            Smart DB - MarketNFT Entity{' '}
             {isLoading && (
               <>
                 <LoaderButton />

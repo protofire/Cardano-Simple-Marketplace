@@ -1,1 +1,1 @@
-export * from './Dummy.FrontEnd.Api.Calls';
+export * from './MarketNFT.FrontEnd.Api.Calls';

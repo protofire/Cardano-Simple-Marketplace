@@ -1,1 +1,1 @@
-export * from './Dummy.Entity';
+export * from './MarketNFT.Entity';

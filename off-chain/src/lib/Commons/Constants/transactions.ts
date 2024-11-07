@@ -1,84 +1,70 @@
 import { Script } from 'lucid-cardano';
 import { scriptSchema, yup } from 'smart-db/backEnd';
 
-export const DUMMY_CREATE = 'Dummy - Create';
-export const DUMMY_CLAIM = 'Dummy - Claim';
-export const DUMMY_UPDATE = 'Dummy - Update';
+export const MARKET_SELL = 'MarketNFT - Sell';
+export const MARKET_BUY = 'MarketNFT - Buy';
+export const MARKET_WITHDRAW = 'MarketNFT - Withdraw';
 
-export interface CreateDummyTxParams {
+export interface SellMarketNFTTxParams {
+    token_TN: string;
+    token_CS: string;
     datumID_CS: string;
     datumID_TN: string;
     validatorAddress: string;
-    mintingIdDummy: Script;
-    ddValue: number;
+    mintingPolicyID: Script;
+    validatorMarket: Script;
+    priceOfAsset: bigint;
 }
-
-export interface ClaimDummyTxParams {
+export interface BuyMarketNFTTxParams {
+    token_TN: string;
+    token_CS: string;
     datumID_CS: string;
     datumID_TN: string;
-    mintingIdDummy: Script;
-    validatorDummy: Script;
-    dummy_id: string;
+    marketNft_id: string;
+    sellerAddress: string;
+    mintingPolicyID: Script;
+    validatorMarket: Script;
+    priceOfAsset: bigint;
 }
 
-export interface UpdateDummyTxParams {
+export interface WithdrawMarketNFTTxParams {
+    token_TN: string;
+    token_CS: string;
     datumID_CS: string;
     datumID_TN: string;
-    validatorAddress: string;
-    validatorDummy: Script;
-    dummy_id: string;
-    ddValue: number;
+    marketNft_id: string;
+    mintingPolicyID: Script;
+    validatorMarket: Script;
 }
-
-export const createDummyTxParamsSchema = yup.object().shape({
+export const sellMarketNFTTxParamsSchema = yup.object().shape({
+    token_TN: yup.string().required(),
+    token_CS: yup.string().required(),
     datumID_CS: yup.string().required(),
     datumID_TN: yup.string().required(),
     validatorAddress: yup.string().required(),
-    mintingIdDummy: scriptSchema.required(),
-    ddValue: yup.number().required(),
+    mintingPolicyID: scriptSchema.required(),
+    validatorMarket: scriptSchema.required(),
+    priceOfAsset: yup.number().required(),
 });
 
-export const claimDummyTxParamsSchema = yup.object().shape({
+export const buyMarketNFTTxParamsSchema = yup.object().shape({
+    token_TN: yup.string().required(),
+    token_CS: yup.string().required(),
     datumID_CS: yup.string().required(),
     datumID_TN: yup.string().required(),
-    mintingIdDummy: scriptSchema.required(),
-    validatorDummy: scriptSchema.required(),
-    dummy_id: yup.number().required(),
+    marketNft_id:  yup.string().required(),
+    sellerAddress:  yup.string().required(),
+    mintingPolicyID: scriptSchema.required(),
+    validatorMarket: scriptSchema.required(),
+    priceOfAsset: yup.number().required(),
 });
 
-export const updateDummyTxParamsSchema = yup.object().shape({
+export const withdrawMarketNFTTxParamsSchema = yup.object().shape({
+    token_TN: yup.string().required(),
+    token_CS: yup.string().required(),
     datumID_CS: yup.string().required(),
     datumID_TN: yup.string().required(),
-    validatorAddress: yup.string().required(),
-    validatorDummy: scriptSchema.required(),
-    dummy_id: yup.string().required(),
-    ddValue: yup.number().required(),
-});
-
-export const FREE_CREATE = 'Free - Create';
-export const FREE_CLAIM = 'Free - Claim';
-export const FREE_UPDATE = 'Free - Update';
-
-export interface CreateFreeTxParams {}
-
-export interface ClaimFreeTxParams {
-    free_ids: string[];
-}
-
-export interface UpdateFreeTxParams {
-    valueToAdd: number;
-    useSmartSelection: boolean;
-    useRead: boolean;
-}
-
-export const createFreeTxParamsSchema = yup.object().shape({});
-
-export const claimFreeTxParamsSchema = yup.object().shape({
-    free_id: yup.number().required(),
-});
-
-export const updateFreeTxParamsSchema = yup.object().shape({
-    valueToAdd: yup.number().required(),
-    useSmartSelection: yup.boolean().required(),
-    useRead: yup.boolean().required(),
+    marketNft_id:  yup.string().required(),
+    mintingPolicyID: scriptSchema.required(),
+    validatorMarket: scriptSchema.required(),
 });

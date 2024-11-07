@@ -1,5 +1,6 @@
-export * from './Dummy.Entity.Mongo';
+export * from './MarketNFT.Entity.Mongo';
 
-export * from './Dummy.Entity.PostgreSQL';
+export * from './MarketNFT.Entity.PostgreSQL';
+
 
 export * from './index';
