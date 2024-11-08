@@ -1,6 +1,6 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
-import { SellMarketNFTTxParams, BuyMarketNFTTxParams, WithdrawMarketNFTTxParams} from '@example/src/lib/Commons/Constants/transactions';
+import { BuyMarketNFTTxParams, SellMarketNFTTxParams, WithdrawMarketNFTTxParams } from '@example/src/lib/Commons/Constants/transactions';
 import { MarketNFTEntity } from '@example/src/lib/SmartDB/Entities/MarketNFT.Entity';
 import { MarketNFTApi } from '@example/src/lib/SmartDB/FrontEnd/MarketNFT.FrontEnd.Api.Calls';
 import Modal from 'react-modal';
@@ -21,25 +21,23 @@ import {
 import LoaderButton from '../../Commons/LoaderButton/LoaderButton';
 import { Sell } from '@/components/Commons/Sell/Sell';
 import { DetailsBalance } from '@example/src/components/Commons/ModalUTxOs/DetailsBalance/DetailsBalance';
-import styles from './Home.module.scss';
-import { HiUserCircle } from 'react-icons/hi';
-import { IoReloadCircleSharp } from 'react-icons/io5';
 import WalletSelectorModal, { Wallet } from '../../Commons/WalletConnector/WalletSelectorModal';
 import WalletConnector from '../../Commons/WalletConnector/WalletConnector';
 
-import { AppStateContext, MenuClass } from '@/pages/_app';
+import { AppStateContext, marketScript, MenuClass } from '@/pages/_app';
 
 export default function Home() {
   const walletStore = useWalletStore();
   const tokensStore = useTokensStore();
+  //----------------------------------------------------------------------------
   const { appState, setAppState } = useContext(AppStateContext);
+  const { lucid, wAddr, marketAddress, menuClass } = appState;
+  //----------------------------------------------------------------------------
   const [showWalletModal, setShowWalletModal] = useState(false);
   //--------------------------------------
   const [list, setList] = useState<MarketNFTEntity[]>();
   const [selectedItem, setSelectedItem] = useState<MarketNFTEntity>();
-  //--------------------------------------
-  const { wAddr, menuClass, marketAddress } = appState;
-  //--------------------------------------
+  //----------------------------------------------------------------------------
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingSync, setIsLoadingSync] = useState(false);
   const [isLoadingBalance, setIsLoadingBalance] = useState(false);
@@ -56,10 +54,30 @@ export default function Home() {
   const [txConfirmed, setTxConfirmed] = useState(false);
   const [isTxError, setIsTxError] = useState(false);
 
+  useEffect(() => {
+    const fetch = async () => {
+      const lucid = await walletStore.getLucid();
+
+      if (lucid === undefined) return;
+      setAppState({
+        ...appState,
+        lucid: lucid,
+        wAddr: await lucid.wallet.address(),
+
+        marketAddress: lucid.utils.validatorToAddress(marketScript),
+      });
+      console.log(appState);
+    };
+    if (walletStore.isConnected === true) {
+      fetch();
+    }
+  }, [walletStore.isConnected]);
+
   const handleBtnSync = async () => {
     //----------------------------
     if (appState.lucid === undefined) return;
     if (wAddr === undefined) return;
+    if (marketAddress === undefined) return;
     //----------------------------
     setIsLoadingSync(true);
     //----------------------------
@@ -117,9 +135,7 @@ export default function Home() {
         </div>
 
         {/* Selector de Wallet alineado a la derecha */}
-        <div className="flex items-center space-x-2">
-          {<WalletConnector lucid={appState.lucid!} />}
-        </div>
+        <div className="flex items-center space-x-2">{<WalletConnector lucid={appState.lucid!} />}</div>
       </header>
 
       <body className="bg-gray-100 text-gray-900 font-sans p-4">
@@ -148,8 +164,8 @@ export default function Home() {
         </section>
 
         <section className="bg-white rounded-lg shadow-md p-6">
-          {menuClass === 'Buy' && <text> To be determinated </text> }
-          {menuClass === 'Sell' && ( < Sell uTxOs={walletStore.uTxOsAtWallet} />)}
+          {menuClass === 'Buy' && <text>To be determinated</text>}
+          {menuClass === 'Sell' && <Sell uTxOs={walletStore.uTxOsAtWallet} />}
         </section>
 
         <Modal

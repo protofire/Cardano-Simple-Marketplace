@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { Convertible, BaseSmartDBEntity, asSmartDBEntity } from 'smart-db';
 
-import { type PaymentKeyHash,  } from 'lucid-cardano';
+import { type Assets, type PaymentKeyHash,  } from 'lucid-cardano';
 
 @asSmartDBEntity()
 
@@ -12,12 +12,12 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
 
     // #region fields
 
-    @Convertible()
-    policyID_TN!: string;
+    @Convertible({ isForDatum: true,  })
+    policyID!: Assets;
     @Convertible( { isForDatum: true,  } )
     sellerAddress!:  PaymentKeyHash ;
-    @Convertible()
-    sellingToken_TN!: string;
+    @Convertible({ isForDatum: true,  })
+    sellingToken!: Assets;
     @Convertible( { isForDatum: true,  } )
     priceOfAsset!: number;
 
@@ -29,9 +29,9 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
 
     public static alwaysFieldsForSelect: Record<string, boolean> = {
         ...super.alwaysFieldsForSelect,
-          policyID_TN: true,
+          policyID: true,
           sellerAddress: true,
-          sellingToken_TN: true,
+          sellingToken: true,
           priceOfAsset: true,
     };
 

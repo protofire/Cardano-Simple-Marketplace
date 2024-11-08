@@ -29,7 +29,7 @@ import qualified Helpers.CLI as CLIHelpers
 import qualified Helpers.Deploy as DeployHelpers
 import qualified Helpers.OffChain as OffChainHelpers
 
-import Policys.PolicyID as PolicyID (policy_ID)
+import Policys.PolicyID as PolicyID (policy_ID, policyIdCode)
 import Policys.PolicyNFT as PolicyNFT (nftPolicyCode)
 import Validators.MarketValidator as MarketValidator (marketValidator)
 
@@ -87,9 +87,11 @@ runDeploy baseFolder = do
       ------------------------------
       P.putStrLn "Generating PolicyID' Script..."
       ------------------------------
-      let policy = PolicyID.policy_ID validator_Hash
-          policy_CS = OffChainHelpers.getCurSymbolOfPolicy policy
-      DeployHelpers.deployMintingPolicy (path SystemFilePathPosix.</> folderName) "PolicyID" policy policy_CS
+      -- let policy = PolicyID.policy_ID validator_Hash
+      --     policy_CS = OffChainHelpers.getCurSymbolOfPolicy policy
+      -- DeployHelpers.deployMintingPolicy (path SystemFilePathPosix.</> folderName) "PolicyID" policy policy_CS
+      let policyCode = PolicyID.policyIdCode
+      DeployHelpers.writeCompiledCodeToJsonFile (path SystemFilePathPosix.</> folderName SystemFilePathPosix.</> "PolicyID.plutus") policyCode
   ------------------------------
       P.putStrLn "Generating 'PolicyNFT' Script..."
       ------------------------------

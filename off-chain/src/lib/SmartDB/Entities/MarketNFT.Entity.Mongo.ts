@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import { MongoAppliedFor  } from 'smart-db';
 import {  BaseSmartDBEntityMongo, IBaseSmartDBEntity } from 'smart-db/backEnd';
 import { MarketNFTEntity } from './MarketNFT.Entity';
-import { type PaymentKeyHash,  } from 'lucid-cardano';
+import {type Assets, type PaymentKeyHash,  } from 'lucid-cardano';
 
 @MongoAppliedFor([MarketNFTEntity])
 export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
@@ -52,16 +52,16 @@ export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
 
     public static MongoModel() {
         interface Interface {
-            policyID_TN: string;
+            policyID: Assets;
             sellerAddress:  PaymentKeyHash ;
-            sellingToken_TN: string;
+            sellingToken: Assets;
             priceOfAsset: number;
         }
 
         const schema = new Schema<Interface>({
-            policyID_TN: { type: String, required: true },
+            policyID: { type: String, required: true },
             sellerAddress: { type: String, required: true },
-            sellingToken_TN: { type: String, required: true },
+            sellingToken: { type: String, required: true },
             priceOfAsset: { type: Number, required: true },
         });
 

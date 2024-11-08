@@ -35,6 +35,7 @@ import PlutusTx.Prelude hiding (unless)
 import qualified Prelude as P
 import qualified Plutus.V2.Ledger.Contexts as LedgerContextV2
 import qualified Plutus.V1.Ledger.Value as LedgerValue
+import Types (SimpleSale(policyID))
 
 
 --------------------------------------------------------------------------------2
@@ -126,6 +127,7 @@ parseSimpleSale o info = case LedgerContextV2.txOutDatum o of
 isEqSimpleSale :: SimpleSale -> SimpleSale -> P.Bool
 isEqSimpleSale a b =
     (sellerAddress a == sellerAddress b)
+        && (policyID a == policyID b)
         && (sellingToken a == sellingToken b)
         && (priceOfAsset a == priceOfAsset b)
 

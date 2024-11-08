@@ -2,11 +2,11 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 import { MarketNFTEntity } from './MarketNFT.Entity';
 import { PostgreSQLAppliedFor, getPostgreSQLTableName } from 'smart-db';
 import {  BaseSmartDBEntityPostgreSQL } from 'smart-db/backEnd';
-import { type PaymentKeyHash,  } from 'lucid-cardano';
+import { type Assets, type PaymentKeyHash,  } from 'lucid-cardano';
 
 @PostgreSQLAppliedFor([MarketNFTEntity])
 @Entity({ name: getPostgreSQLTableName(MarketNFTEntity.className()) })
-@Index(['ddPaymentPKH', ]) // Add indices as needed
+@Index(['sellerAddress', ]) // Add indices as needed
 export class MarketNFTEntityPostgreSQL extends  BaseSmartDBEntityPostgreSQL {
     protected static Entity = MarketNFTEntity;
 
@@ -44,11 +44,11 @@ export class MarketNFTEntityPostgreSQL extends  BaseSmartDBEntityPostgreSQL {
     _id!: number; // Auto-generated primary key
 
     @Column({ type: "varchar", length: 255  })
-    policyID_TN!:string;
+    policyID!:Assets;
     @Column({ type: "varchar", length: 255  })
     sellerAddress!: PaymentKeyHash ;
     @Column({ type: "varchar", length: 255  })
-    sellingToken_TN!:string;
+    sellingToken!:Assets;
     @Column({ type: "int"  })
     priceOfAsset!:number;
 
