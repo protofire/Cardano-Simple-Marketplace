@@ -52,15 +52,15 @@ export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
 
     public static MongoModel() {
         interface Interface {
-            policyID: Assets;
             sellerAddress:  PaymentKeyHash ;
+            policyID: Assets;
             sellingToken: Assets;
             priceOfAsset: number;
         }
 
         const schema = new Schema<Interface>({
-            policyID: { type: String, required: true },
             sellerAddress: { type: String, required: true },
+            policyID: { type: String, required: true },
             sellingToken: { type: String, required: true },
             priceOfAsset: { type: Number, required: true },
         });

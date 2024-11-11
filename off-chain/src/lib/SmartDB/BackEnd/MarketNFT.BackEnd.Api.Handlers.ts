@@ -1,4 +1,4 @@
-import { Assets, Tx } from 'lucid-cardano';
+import { Assets, Data, Tx } from 'lucid-cardano';
 import { NextApiResponse } from 'next';
 import {
     addAssetsList,
@@ -141,6 +141,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 //   lovelace: minADA_For_MarketNFTDatum,
                 // };
                 // valueFor_MarketNFTDatum_Out = addAssetsList([value_MinAda_For_MarketNFTDatum, valueFor_MarketNFTDatum_Out]);
+        //
                 const lucidAC_sellerToken = token_CS + strToHex(token_TN);
                 const valueOfSellerToken: Assets = { [lucidAC_sellerToken]: 1n };
                 valueFor_MarketNFTDatum_Out = addAssetsList([valueOfSellerToken, valueFor_MarketNFTDatum_Out]);
@@ -149,9 +150,9 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 //--------------------------------------
                 const paymentPKH = addressToPubKeyHash(address);
                 const datumPlainObject = {
-                    sellingToken: valueOfSellerToken,
-                    policyID: valueFor_Mint_ID,
                     sellerAddress: paymentPKH,
+                    policyID: lucidAC_MintID,
+                    sellingToken: lucidAC_sellerToken,
                     priceOfAsset: BigInt(priceOfAsset),
                 };
                 //--------------------------------------
@@ -170,7 +171,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 //--------------------------------------
                 let tx: Tx = lucid.newTx();
                 //--------------------------------------
-                tx = await tx
+                tx = tx
                     .mintAssets(valueFor_Mint_ID, marketNftPolicyRedeemerMintID_Hex)
                     .payToContract(validatorAddress, { inline: marketNftDatum_Out_Hex }, valueFor_MarketNFTDatum_Out)
                     .attachMintingPolicy(mintingPolicyID);

@@ -12,10 +12,10 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
 
     // #region fields
 
-    @Convertible({ isForDatum: true,  })
-    policyID!: Assets;
     @Convertible( { isForDatum: true,  } )
     sellerAddress!:  PaymentKeyHash ;
+    @Convertible({ isForDatum: true,  })
+    policyID!: Assets;
     @Convertible({ isForDatum: true,  })
     sellingToken!: Assets;
     @Convertible( { isForDatum: true,  } )

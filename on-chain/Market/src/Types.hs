@@ -35,7 +35,6 @@ import PlutusTx.Prelude hiding (unless)
 import qualified Prelude as P
 import qualified Plutus.V2.Ledger.Contexts as LedgerContextV2
 import qualified Plutus.V1.Ledger.Value as LedgerValue
-import Types (SimpleSale(policyID))
 
 
 --------------------------------------------------------------------------------2

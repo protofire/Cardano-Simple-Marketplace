@@ -44,9 +44,9 @@ export class MarketNFTEntityPostgreSQL extends  BaseSmartDBEntityPostgreSQL {
     _id!: number; // Auto-generated primary key
 
     @Column({ type: "varchar", length: 255  })
-    policyID!:Assets;
-    @Column({ type: "varchar", length: 255  })
     sellerAddress!: PaymentKeyHash ;
+    @Column({ type: "varchar", length: 255  })
+    policyID!:Assets;
     @Column({ type: "varchar", length: 255  })
     sellingToken!:Assets;
     @Column({ type: "int"  })
