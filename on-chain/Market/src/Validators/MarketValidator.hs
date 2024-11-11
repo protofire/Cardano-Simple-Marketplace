@@ -22,6 +22,8 @@ import PlutusTx qualified
 import Helpers.OnChain qualified as OnChainHelpers
 import PlutusTx.Prelude hiding (unless)
 import Types
+import Plutus.V1.Ledger.Value (assetClass)
+import qualified Ledger.Ada as LedgerAda
 
 {-# INLINEABLE mkMarket #-}
 mkMarket :: BuiltinData -> BuiltinData -> BuiltinData -> ()
@@ -35,7 +37,8 @@ mkMarket datumRaw redeemerRaw ctxRaw =
         !input_TxOut_BeingValidated = OnChainHelpers.getUnsafe_Own_Input_TxOut ctx
         !marketValidatorAddress = LedgerApiV2.txOutAddress input_TxOut_BeingValidated
         ------------------
-        !policyID_AC = policyID datum_In
+        !policyID_AC = assetClass (policyID_CS datum_In) marketID_TN 
+        !sellingToken_AC = assetClass (sellingToken_CS datum_In) (sellingToken_TN datum_In)
 
         !inputsOwnTxOuts =
             [ LedgerApiV2.txInInfoResolved txInfoInput | txInfoInput <- LedgerApiV2.txInfoInputs info, let address = LedgerApiV2.txOutAddress (LedgerApiV2.txInInfoResolved txInfoInput)
@@ -55,8 +58,7 @@ mkMarket datumRaw redeemerRaw ctxRaw =
               _ -> traceError "Expected exactly one SimpleSale input"
 
         !callOption_Datum_Out = OnChainHelpers.getDatum_In_TxOut_And_Datum input_Own_TxOut_And_SimpleSale_Datum
-
-        --------------------------------- Buy ------------------------------------------
+--------------------------------- Buy ------------------------------------------
         !validateBuyNFTSimpleSale =
             traceIfFalse "Seller not paid" sellerPaid
                 && traceIfFalse "Expected one input" (length inputsOwnTxOuts == 1)
@@ -75,9 +77,12 @@ mkMarket datumRaw redeemerRaw ctxRaw =
                     ---------------------
                     !policyIDToken = LedgerValue.assetClassValue policyID_AC 1
                     ---------------------
-                    !sellingValue = LedgerValue.assetClassValue (sellingToken callOption_Datum_Out) 1
+                    !sellingValue = LedgerValue.assetClassValue sellingToken_AC  1
                     ---------------------
-                    !valueFor_SimpleSale_Datum_Out_Control = policyIDToken <> sellingValue
+                    !minADAFromDatum = minADA datum_In
+                    !valueMinADA = LedgerAda.lovelaceValueOf minADAFromDatum
+                    ---------------------
+                    !valueFor_SimpleSale_Datum_Out_Control = valueMinADA <> policyIDToken <> sellingValue
                     ---------------------
                     !valueOf_SimpleSale_Out = OnChainHelpers.getValue_In_TxOut_And_Datum input_Own_TxOut_And_SimpleSale_Datum
                  in
@@ -85,7 +90,7 @@ mkMarket datumRaw redeemerRaw ctxRaw =
             sellerPaid :: Bool
             !sellerPaid =
                 LedgerContextsV2.valuePaidTo info (sellerAddress datum_In)
-                    == LedgerApiV2.singleton LedgerApiV2.adaSymbol LedgerApiV2.adaToken (priceOfAsset datum_In)
+                    == LedgerApiV2.singleton LedgerApiV2.adaSymbol LedgerApiV2.adaToken (priceOfAsset datum_In + minADA datum_In)
 
         --------------------------------- Withdraw -------------------------------------
         !validateSellerWithdraw =

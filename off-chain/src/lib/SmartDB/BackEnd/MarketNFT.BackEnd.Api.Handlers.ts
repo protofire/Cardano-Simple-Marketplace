@@ -134,26 +134,30 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 console_log(0, this._Entity.className(), `Sell Tx - valueFor_Mint_ID: ${showData(valueFor_Mint_ID)}`);
                 //----------------------------
                 let valueFor_MarketNFTDatum_Out: Assets = valueFor_Mint_ID;
-                // const minADA_For_MarketNFTDatum = calculateMinAdaOfUTxO({
-                //   assets: valueFor_MarketNFTDatum_Out,
-                // });
-                // const value_MinAda_For_MarketNFTDatum: Assets = {
-                //   lovelace: minADA_For_MarketNFTDatum,
-                // };
-                // valueFor_MarketNFTDatum_Out = addAssetsList([value_MinAda_For_MarketNFTDatum, valueFor_MarketNFTDatum_Out]);
-        //
+        
                 const lucidAC_sellerToken = token_CS + strToHex(token_TN);
                 const valueOfSellerToken: Assets = { [lucidAC_sellerToken]: 1n };
                 valueFor_MarketNFTDatum_Out = addAssetsList([valueOfSellerToken, valueFor_MarketNFTDatum_Out]);
+                //----------------------------
+                const minADA_For_MarketNFTDatum = calculateMinAdaOfUTxO({
+                  assets: valueFor_MarketNFTDatum_Out,
+                });
+                const value_MinAda_For_MarketNFTDatum: Assets = {
+                  lovelace: minADA_For_MarketNFTDatum,
+                };
+                valueFor_MarketNFTDatum_Out = addAssetsList([value_MinAda_For_MarketNFTDatum, valueFor_MarketNFTDatum_Out]);
+                //----------------------------
                 console_log(0, this._Entity.className(), `Sell Tx - valueFor_Mint_ID: ${showData(valueFor_Mint_ID)}`);
                 console_log(0, this._Entity.className(), `Sell Tx - valueFor_FundDatum_Out: ${showData(valueFor_MarketNFTDatum_Out, false)}`);
                 //--------------------------------------
                 const paymentPKH = addressToPubKeyHash(address);
                 const datumPlainObject = {
                     sellerAddress: paymentPKH,
-                    policyID: lucidAC_MintID,
-                    sellingToken: lucidAC_sellerToken,
+                    policyID_CS: datumID_CS,
+                    sellingToken_CS: token_CS,
+                    sellingToken_TN: strToHex(token_TN),
                     priceOfAsset: BigInt(priceOfAsset),
+                    minADA: BigInt(minADA_For_MarketNFTDatum)
                 };
                 //--------------------------------------
                 let marketNftDatum_Out = MarketNFTEntity.mkDatumFromPlainObject(datumPlainObject);

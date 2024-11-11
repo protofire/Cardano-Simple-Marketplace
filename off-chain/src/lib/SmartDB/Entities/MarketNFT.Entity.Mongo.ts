@@ -1,20 +1,19 @@
-
-import { Schema, model, models } from 'mongoose';
+import { model, models, Schema } from 'mongoose';
 import 'reflect-metadata';
-import { MongoAppliedFor  } from 'smart-db';
-import {  BaseSmartDBEntityMongo, IBaseSmartDBEntity } from 'smart-db/backEnd';
+import { MongoAppliedFor } from 'smart-db';
+import { BaseSmartDBEntityMongo, CS, IBaseSmartDBEntity, TN } from 'smart-db/backEnd';
 import { MarketNFTEntity } from './MarketNFT.Entity';
-import {type Assets, type PaymentKeyHash,  } from 'lucid-cardano';
+import { type PaymentKeyHash } from 'lucid-cardano';
 
 @MongoAppliedFor([MarketNFTEntity])
-export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
+export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
     protected static Entity = MarketNFTEntity;
     protected static _mongoTableName: string = MarketNFTEntity.className();
 
     // #region fields
 
     // policyID_TN:String
-    // sellerAddress: PaymentKeyHash 
+    // sellerAddress: PaymentKeyHash
     // sellingToken_TN:String
     // priceOfAsset:Int
 
@@ -52,17 +51,21 @@ export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
 
     public static MongoModel() {
         interface Interface {
-            sellerAddress:  PaymentKeyHash ;
-            policyID: Assets;
-            sellingToken: Assets;
-            priceOfAsset: number;
+            sellerAddress: PaymentKeyHash;
+            policyID_CS: CS;
+            sellingToken_CS: CS;
+            sellingToken_TN: TN;
+            priceOfAsset: BigInt;
+            minADA: BigInt;
         }
 
         const schema = new Schema<Interface>({
             sellerAddress: { type: String, required: true },
-            policyID: { type: String, required: true },
-            sellingToken: { type: String, required: true },
+            policyID_CS: { type: String, required: true },
+            sellingToken_CS: { type: String, required: true },
+            sellingToken_TN: { type: String, required: true },
             priceOfAsset: { type: Number, required: true },
+            minADA: { type: Number, required: true },
         });
 
         const ModelDB = models[this._mongoTableName] || model<Interface>(this._mongoTableName, schema);
@@ -71,4 +74,3 @@ export class MarketNFTEntityMongo extends  BaseSmartDBEntityMongo {
 
     // #endregion mongo db
 }
-

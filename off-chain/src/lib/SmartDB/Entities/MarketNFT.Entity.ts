@@ -1,32 +1,33 @@
 import 'reflect-metadata';
 
-import { Convertible, BaseSmartDBEntity, asSmartDBEntity } from 'smart-db';
+import { asSmartDBEntity, BaseSmartDBEntity, Convertible, type CS, type TN } from 'smart-db';
 
-import { type Assets, type PaymentKeyHash,  } from 'lucid-cardano';
+import {type PaymentKeyHash } from 'lucid-cardano';
 
 @asSmartDBEntity()
-
 export class MarketNFTEntity extends BaseSmartDBEntity {
     protected static _apiRoute: string = 'marketnft';
     protected static _className: string = 'MarketNFT';
 
     // #region fields
 
-    @Convertible( { isForDatum: true,  } )
-    sellerAddress!:  PaymentKeyHash ;
-    
-    @Convertible({ isForDatum: true,  })
-    policyID!: String;
-   
-    @Convertible({ isForDatum: true,  })
-    sellingToken_CS!: String;
+    @Convertible({ isForDatum: true })
+    sellerAddress!: PaymentKeyHash;
 
-    @Convertible({ isForDatum: true,  })
-    sellingToken_TN!: String;
-    
-    @Convertible( { isForDatum: true,  } )
+    @Convertible({ isForDatum: true })
+    policyID_CS!: CS;
+
+    @Convertible({ isForDatum: true })
+    sellingToken_CS!: CS;
+
+    @Convertible({ isForDatum: true })
+    sellingToken_TN!: TN;
+
+    @Convertible({ isForDatum: true })
     priceOfAsset!: BigInt;
 
+    @Convertible({ isForDatum: true })
+    minADA!: BigInt;
     // #endregion fields
 
     // #region db
@@ -35,10 +36,13 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
 
     public static alwaysFieldsForSelect: Record<string, boolean> = {
         ...super.alwaysFieldsForSelect,
-          policyID: true,
-          sellerAddress: true,
-          sellingToken: true,
-          priceOfAsset: true,
+
+        sellerAddress: true,
+        policyID_CS: true,
+        sellingToken_CS: true,
+        sellingToken_TN: true,
+        priceOfAsset: true,
+        minADA: true,
     };
 
     // #endregion db
