@@ -83,8 +83,8 @@ getTypeSimpleSaleNT (SimpleSaleNT t) = t
 {-# INLINEABLE mkTypeSimpleSale #-}
 mkTypeSimpleSale ::
     LedgerApiV2.PubKeyHash ->
-    LedgerValue.AssetClass ->
-    LedgerValue.AssetClass ->
+    LedgerApiV2.AssetClass ->
+    LedgerApiV2.AssetClass ->
     Integer ->
     SimpleSale
 mkTypeSimpleSale _dSellerAddress _dPolicyID _dSellingToken _dPriceOfAsset =
@@ -97,8 +97,9 @@ mkTypeSimpleSale _dSellerAddress _dPolicyID _dSellingToken _dPriceOfAsset =
 
 data SimpleSale = SimpleSale
   { sellerAddress :: LedgerApiV2.PubKeyHash
-  , policyID      :: LedgerValue.AssetClass
-  , sellingToken :: LedgerValue.AssetClass
+  , policyID      :: LedgerApiV2.CurrencySymbol
+  , sellingToken_CS :: LedgerApiV2.CurrencySymbol
+    , sellingToken_TN :: LedgerApiV2.TokenName
   , priceOfAsset :: Integer
   }
 
