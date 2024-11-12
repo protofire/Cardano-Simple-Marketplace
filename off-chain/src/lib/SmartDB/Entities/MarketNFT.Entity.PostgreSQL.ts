@@ -6,7 +6,7 @@ import { type PaymentKeyHash,  } from 'lucid-cardano';
 
 @PostgreSQLAppliedFor([MarketNFTEntity])
 @Entity({ name: getPostgreSQLTableName(MarketNFTEntity.className()) })
-@Index(['sellerAddress', ]) // Add indices as needed
+@Index(['sellerPaymentPKH', ]) // Add indices as needed
 export class MarketNFTEntityPostgreSQL extends  BaseSmartDBEntityPostgreSQL {
     protected static Entity = MarketNFTEntity;
 
@@ -44,7 +44,7 @@ export class MarketNFTEntityPostgreSQL extends  BaseSmartDBEntityPostgreSQL {
     _id!: number; // Auto-generated primary key
 
     @Column({ type: "varchar", length: 255  })
-    sellerAddress!: PaymentKeyHash ;
+    sellerPaymentPKH!: PaymentKeyHash ;
     @Column({ type: "varchar", length: 255  })
     policyID_CS!:CS;
     @Column({ type: "varchar", length: 255  })

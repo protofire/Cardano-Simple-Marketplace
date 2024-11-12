@@ -13,7 +13,7 @@ export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
     // #region fields
 
     // policyID_TN:String
-    // sellerAddress: PaymentKeyHash
+    // sellerPaymentPKH: PaymentKeyHash
     // sellingToken_TN:String
     // priceOfAsset:Int
 
@@ -51,7 +51,7 @@ export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
 
     public static MongoModel() {
         interface Interface {
-            sellerAddress: PaymentKeyHash;
+            sellerPaymentPKH: PaymentKeyHash;
             policyID_CS: CS;
             sellingToken_CS: CS;
             sellingToken_TN: TN;
@@ -60,7 +60,7 @@ export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
         }
 
         const schema = new Schema<Interface>({
-            sellerAddress: { type: String, required: true },
+            sellerPaymentPKH: { type: String, required: true },
             policyID_CS: { type: String, required: true },
             sellingToken_CS: { type: String, required: true },
             sellingToken_TN: { type: String, required: true },
