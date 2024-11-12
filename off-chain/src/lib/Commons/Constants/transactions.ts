@@ -53,7 +53,7 @@ export const buyMarketNFTTxParamsSchema = yup.object().shape({
     datumID_CS: yup.string().required(),
     datumID_TN: yup.string().required(),
     marketNft_id:  yup.string().required(),
-    sellerAddress:  yup.string().required(),
+    sellerPaymentPKH:  yup.string().required(),
     mintingPolicyID: scriptSchema.required(),
     validatorMarket: scriptSchema.required(),
     priceOfAsset: yup.number().required(),
