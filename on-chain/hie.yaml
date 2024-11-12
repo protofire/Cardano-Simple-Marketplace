@@ -1,0 +1,11 @@
+cradle:
+  cabal:
+
+    - path: "./Market/src"
+      component: "lib:MarketValidator"
+
+    - path: "./Market/app"
+      component: "MarketValidator:exe:MarketValidatorDeploy"
+
+    - path: "./Market/test"
+      component: "MarketValidator:test:MarketValidatorTest"
