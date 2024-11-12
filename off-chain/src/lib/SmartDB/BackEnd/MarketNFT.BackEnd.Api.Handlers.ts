@@ -67,7 +67,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 if (query.length === 2) {
                     if (query[1] === 'sell-nft-tx') {
                         return await this.sellTxApiHandler(req, res);
-                    } else if (query[1] === 'buy-marketNft-tx') {
+                    } else if (query[1] === 'buy-nft-tx') {
                         return await this.buyTxApiHandler(req, res);
                     } else if (query[1] === 'withdraw-nft-tx') {
                         return await this.withdrawTxApiHandler(req, res);
@@ -134,7 +134,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 console_log(0, this._Entity.className(), `Sell Tx - valueFor_Mint_ID: ${showData(valueFor_Mint_ID)}`);
                 //----------------------------
                 let valueFor_MarketNFTDatum_Out: Assets = valueFor_Mint_ID;
-        
+                //----------------------------
                 const lucidAC_sellerToken = token_CS + strToHex(token_TN);
                 const valueOfSellerToken: Assets = { [lucidAC_sellerToken]: 1n };
                 valueFor_MarketNFTDatum_Out = addAssetsList([valueOfSellerToken, valueFor_MarketNFTDatum_Out]);
@@ -151,8 +151,9 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 console_log(0, this._Entity.className(), `Sell Tx - valueFor_FundDatum_Out: ${showData(valueFor_MarketNFTDatum_Out, false)}`);
                 //--------------------------------------
                 const paymentPKH = addressToPubKeyHash(address);
+                //--------------------------------------
                 const datumPlainObject = {
-                    sellerAddress: paymentPKH,
+                    sellerPaymentPKH: paymentPKH,
                     policyID_CS: datumID_CS,
                     sellingToken_CS: token_CS,
                     sellingToken_TN: strToHex(token_TN),
@@ -185,6 +186,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 const txCborHex = txComplete.toString();
                 //--------------------------------------
                 const txHash = txComplete.toHash();
+                console_log(0, this._Entity.className(), `Sell Tx - txHash: ${showData(txHash)}`);
                 //--------------------------------------
                 const transactionMarketNFTPolicyRedeemerMintID: TransactionRedeemer = {
                     tx_index: 0,
@@ -214,7 +216,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 await TransactionBackEndApplied.create(transaction);
                 //--------------------------------------
                 console_log(-1, this._Entity.className(), `Sell Tx - txCborHex: ${showData(txCborHex)}`);
-                return res.status(200).json({ txCborHex });
+                return res.status(200).json({ txCborHex, txHash });
                 //--------------------------------------
             } catch (error) {
                 console_error(-1, this._Entity.className(), `Sell Tx - Error: ${error}`);
@@ -255,7 +257,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 //--------------------------------------
                 const { utxos: uTxOsAtWallet, address } = walletTxParams;
                 //--------------------------------------
-                const { priceOfAsset, token_TN, token_CS, datumID_CS, datumID_TN, marketNft_id, sellerAddress, mintingPolicyID, validatorMarket } = txParams;
+                const {  token_TN, token_CS, datumID_CS, datumID_TN, marketNft_id, sellerAddress: sellerPaymentPKH, mintingPolicyID, validatorMarket } = txParams;
                 //--------------------------------------
                 const marketNft = await MarketNFTBackEndApplied.getById_<MarketNFTEntity>(marketNft_id, {
                     ...optionsGetMinimalWithSmartUTxOCompleteFields,
@@ -282,8 +284,8 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 const valueOfSellerToken: Assets = { [lucidAC_sellerToken]: 1n };
                 console_log(0, this._Entity.className(), `Buy Tx - valueFor_SellToken: ${showData(valueOfSellerToken)}`);
                 //----------------------------
-                const value_TokenPrice_For_MarketNFTDatum: Assets = {
-                    lovelace: priceOfAsset,
+                const value_TokenPrice_PlusMinADA_For_MarketNFTDatum: Assets = {
+                    lovelace: BigInt(marketNft.priceOfAsset + marketNft.minADA),
                 };
                 //----------------------------
                 const marketNftPolicyRedeemerBurnID = new PolicyRedeemerBurnID();
@@ -306,7 +308,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                     .collectFrom([marketNft_UTxO], marketNftValidatorRedeemerBuy_Hex)
                     .attachMintingPolicy(mintingPolicyID)
                     .attachSpendingValidator(validatorMarket)
-                    .payToAddress(sellerAddress, value_TokenPrice_For_MarketNFTDatum)
+                    .payToAddress(sellerPaymentPKH, value_TokenPrice_PlusMinADA_For_MarketNFTDatum)
                     .payToAddress(address, valueOfSellerToken)
                     .addSigner(address);
                 //----------------------------
@@ -315,6 +317,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 const txCborHex = txComplete.toString();
                 //--------------------------------------
                 const txHash = txComplete.toHash();
+                console_log(0, this._Entity.className(), `Buy Tx - txHash: ${showData(txHash)}`);
                 //--------------------------------------
                 const transactionMarketNFTPolicyRedeemerBurnID: TransactionRedeemer = {
                     tx_index: 0,
@@ -351,7 +354,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 await TransactionBackEndApplied.create(transaction);
                 //--------------------------------------
                 console_log(-1, this._Entity.className(), `Buy Tx - txCborHex: ${showData(txCborHex)}`);
-                return res.status(200).json({ txCborHex });
+                return res.status(200).json({ txCborHex , txHash});
                 //--------------------------------------
             } catch (error) {
                 console_error(-1, this._Entity.className(), `Buy Tx - Error: ${error}`);
@@ -409,8 +412,8 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                     throw `MarketNFT UTxO is being used, please wait and try again`;
                 }
                 const lucidAC_sellerToken = token_CS + strToHex(token_TN);
-                const valueOfSellerToken: Assets = { [lucidAC_sellerToken]: 1n };
-                console_log(0, this._Entity.className(), `Withdraw Tx - valueFor_SellToken: ${showData(valueOfSellerToken)}`);
+                const valueOfSellerTokenPlusADA: Assets = { [lucidAC_sellerToken]: 1n, lovelace: BigInt(marketNft.priceOfAsset + marketNft.minADA),};
+                console_log(0, this._Entity.className(), `Withdraw Tx - valueFor_SellToken: ${showData(valueOfSellerTokenPlusADA)}`);
                 //--------------------------------------
                 const marketNft_UTxO = marketNft_SmartUTxO.getUTxO();
                 //--------------------------------------
@@ -438,15 +441,15 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                     .collectFrom([marketNft_UTxO], marketNftValidatorRedeemerWithdraw_Hex)
                     .attachMintingPolicy(mintingPolicyID)
                     .attachSpendingValidator(validatorMarket)
-                    .payToAddress(address, valueOfSellerToken)
+                    .payToAddress(address, valueOfSellerTokenPlusADA)
                     .addSigner(address);
-
                 //----------------------------
                 const txComplete = await tx.complete();
                 //--------------------------------------
                 const txCborHex = txComplete.toString();
                 //--------------------------------------
                 const txHash = txComplete.toHash();
+                console_log(0, this._Entity.className(), `Withdraw Tx - txHash: ${showData(txHash)}`);
                 //--------------------------------------
                 const transactionMarketNFTPolicyRedeemerBurnID: TransactionRedeemer = {
                     tx_index: 0,
@@ -483,7 +486,7 @@ export class MarketNFTApiHandlers extends BaseSmartDBBackEndApiHandlers {
                 await TransactionBackEndApplied.create(transaction);
                 //--------------------------------------
                 console_log(-1, this._Entity.className(), `Withdraw Tx - txCborHex: ${showData(txCborHex)}`);
-                return res.status(200).json({ txCborHex });
+                return res.status(200).json({ txCborHex , txHash});
                 //--------------------------------------
             } catch (error) {
                 console_error(-1, this._Entity.className(), `Withdraw Tx - Error: ${error}`);
