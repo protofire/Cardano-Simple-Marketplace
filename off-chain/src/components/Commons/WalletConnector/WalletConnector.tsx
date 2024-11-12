@@ -9,11 +9,9 @@ import WalletList from './WalletList/WalletList';
 
 import { HiUserCircle } from 'react-icons/hi';
 import { IoReloadCircleSharp } from 'react-icons/io5';
-interface Props {
-  lucid: Lucid;
-}
 
-const WalletConnector: React.FC<Props> = ({ lucid }) => {
+
+const WalletConnector: React.FC = () => {
   //--------------------------------------
   const [privateKey, setPrivateKey] = useState<string>();
   //--------------------------------------
@@ -38,7 +36,9 @@ const WalletConnector: React.FC<Props> = ({ lucid }) => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const privateKey = lucid.utils.generatePrivateKey(); // Bech32 encoded private key
+        if (walletStore._lucidForUseAsUtils === undefined) return;
+
+        const privateKey = walletStore._lucidForUseAsUtils.utils.generatePrivateKey(); // Bech32 encoded private key
         setPrivateKey(privateKey);
         console.log(`privateKey: ${privateKey}`);
       } catch (e) {
@@ -46,7 +46,7 @@ const WalletConnector: React.FC<Props> = ({ lucid }) => {
       }
     };
     fetch();
-  }, []);
+  }, [walletStore._lucidForUseAsUtils]);
   //--------------------------------------
   const handleBtnConnectWallet = async () => {
     setIsWalletConnectorModalOpen(true);
