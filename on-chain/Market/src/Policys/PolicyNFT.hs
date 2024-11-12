@@ -1,35 +1,37 @@
-{-# LANGUAGE DataKinds         #-}
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE RecordWildCards   #-}
-{-# LANGUAGE TemplateHaskell   #-}
-{-# LANGUAGE TypeApplications  #-}
-{-# LANGUAGE TypeFamilies      #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 {- HLINT ignore "Use camelCase" -}
 
 module Policys.PolicyNFT where
 
-import qualified Ledger.Value              as LedgerValue
+import qualified Ledger.Value as LedgerValue
 import qualified Plutonomy
-import qualified Plutus.V2.Ledger.Api      as LedgerApiV2
+import qualified Plutus.V2.Ledger.Api as LedgerApiV2
 import qualified Plutus.V2.Ledger.Contexts as LedgerContextsV2
 import qualified PlutusTx
-import           PlutusTx.Prelude
+import PlutusTx.Prelude
 
 -- Data type for redeemer
 data NFTRedeemer = Mint | Burn
 PlutusTx.unstableMakeIsData ''NFTRedeemer
 
 -- Minting policy function
-{-# INLINABLE mkPolicyNFT #-}
+{-# INLINEABLE mkPolicyNFT #-}
 mkPolicyNFT :: LedgerApiV2.TxOutRef -> PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> ()
 mkPolicyNFT oref redRaw ctxRaw =
     if case redeemer of
         Burn -> traceIfFalse "Wrong amount burned" checkBurnAmount
-        Mint -> traceIfFalse "UTxO not consumed"   hasInputUTxO &&
-                traceIfFalse "Wrong amount minted" checkMintedAmount
-    then () else error ()
+        Mint ->
+            traceIfFalse "UTxO not consumed" hasInputUTxO
+                && traceIfFalse "Wrong amount minted" checkMintedAmount
+        then ()
+        else error ()
     where
         ctx = LedgerApiV2.unsafeFromBuiltinData @LedgerContextsV2.ScriptContext ctxRaw
         redeemer = LedgerApiV2.unsafeFromBuiltinData @NFTRedeemer redRaw
@@ -50,10 +52,10 @@ policy_NFT oref = Plutonomy.optimizeUPLC $ Plutonomy.mintingPolicyToPlutus $ ori
 {-# INLINEABLE original_policy_NFT #-}
 original_policy_NFT :: LedgerApiV2.TxOutRef -> Plutonomy.MintingPolicy
 original_policy_NFT oref =
-  Plutonomy.mkMintingPolicyScript $
-    $$(PlutusTx.compile [|| mkPolicyNFT ||])
-    `PlutusTx.applyCode`
-    PlutusTx.liftCode oref
+    Plutonomy.mkMintingPolicyScript $
+        $$(PlutusTx.compile [||mkPolicyNFT||])
+            `PlutusTx.applyCode` PlutusTx.liftCode oref
+
 ----------------------------------------------------------------------------------------
 
 {-# INLINEABLE mkWrappedPolicy #-}

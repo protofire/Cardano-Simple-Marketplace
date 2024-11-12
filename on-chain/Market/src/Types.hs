@@ -28,6 +28,7 @@ module Types where
 -- Import Externos
 --------------------------------------------------------------------------------2
 
+import qualified Helpers.OffChain as OffChainHelpers
 import qualified Plutus.V1.Ledger.Value as LedgerValue
 import qualified Plutus.V2.Ledger.Api as LedgerApiV2
 import qualified Plutus.V2.Ledger.Contexts as LedgerContextV2
@@ -69,72 +70,153 @@ type StakeCredentialPubKeyHash = LedgerApiV2.PubKeyHash
 -- --     toSchema = Schema.FormSchemaUnit
 
 --------------------------------------------------------------------------------2
+
+data PolicyRedeemerMintIDType = PolicyRedeemerMintIDType
+    deriving (P.Show, P.Eq)
+
+instance Eq PolicyRedeemerMintIDType where
+    {-# INLINEABLE (==) #-}
+    PolicyRedeemerMintIDType == PolicyRedeemerMintIDType = True
+
+PlutusTx.unstableMakeIsData ''PolicyRedeemerMintIDType
+
+data PolicyRedeemerBurnIDType = PolicyRedeemerBurnIDType
+    deriving (P.Show, P.Eq)
+
+instance Eq PolicyRedeemerBurnIDType where
+    {-# INLINEABLE (==) #-}
+    PolicyRedeemerBurnIDType == PolicyRedeemerBurnIDType = True
+
+PlutusTx.unstableMakeIsData ''PolicyRedeemerBurnIDType
+
+data PolicyIDRedeemer
+    = PolicyRedeemerMintID PolicyRedeemerMintIDType
+    | PolicyRedeemerBurnID PolicyRedeemerBurnIDType
+    deriving (P.Show, P.Eq)
+
+instance Eq PolicyIDRedeemer where
+    {-# INLINEABLE (==) #-}
+    PolicyRedeemerMintID rmtx1 == PolicyRedeemerMintID rmtx2 = rmtx1 == rmtx2
+    PolicyRedeemerBurnID rmtx1 == PolicyRedeemerBurnID rmtx2 = rmtx1 == rmtx2
+    _ == _ = False
+
+PlutusTx.makeIsDataIndexed
+    ''PolicyIDRedeemer
+    [ ('PolicyRedeemerMintID, 1)
+    , ('PolicyRedeemerBurnID, 2)
+    ]
+
+--------------------------------------------------------------------------------
+
 data MarketRedeemer = Buy | Withdraw
+    deriving (P.Show, P.Eq)
+
 PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
-newtype SimpleSaleNT = SimpleSaleNT SimpleSale
+--------------------------------------------------------------------------------2
 
-{-# INLINEABLE getTypeSimpleSaleNT #-}
-getTypeSimpleSaleNT :: SimpleSaleNT -> SimpleSale
-getTypeSimpleSaleNT (SimpleSaleNT t) = t
+data SimpleSale = SimpleSale
+    { sellerPaymentPKH :: LedgerApiV2.PubKeyHash
+    , policyID_CS :: CS
+    , sellingToken_CS :: CS
+    , sellingToken_TN :: TN
+    , priceOfAsset :: Integer
+    , minADA :: Integer
+    }
+    deriving (P.Show, P.Eq)
+
+PlutusTx.makeIsDataIndexed
+    ''SimpleSale
+    [ ('SimpleSale, 0)
+    ]
+
+-- newtype SimpleSaleNT = SimpleSaleNT SimpleSale
+
+-- PlutusTx.makeIsDataIndexed
+--   ''SimpleSaleNT
+--   [ ('SimpleSaleNT, 0)
+--   ]
+
+-- {-# INLINEABLE getTypeSimpleSaleNT #-}
+-- getTypeSimpleSaleNT :: SimpleSaleNT -> SimpleSale
+-- getTypeSimpleSaleNT (SimpleSaleNT t) = t
 
 {-# INLINEABLE mkTypeSimpleSale #-}
 mkTypeSimpleSale ::
-  LedgerApiV2.PubKeyHash ->
-  CS ->
-  CS ->
-  TN ->
-  Integer ->
-  Integer ->
-  SimpleSale
-mkTypeSimpleSale _dSellerAddress _dPolicyID_CS _dSellingToken_CS _dSellingToken_TN _dPriceOfAsset _dMinADA =
-  SimpleSale
-    { sellerAddress = _dSellerAddress
-    , policyID_CS = _dPolicyID_CS
-    , sellingToken_CS = _dSellingToken_CS
-    , sellingToken_TN = _dSellingToken_TN
-    , priceOfAsset = _dPriceOfAsset
-    , minADA = _dMinADA
-    }
+    LedgerApiV2.PubKeyHash ->
+    CS ->
+    CS ->
+    TN ->
+    Integer ->
+    Integer ->
+    SimpleSale
+mkTypeSimpleSale _dSellerPaymentPKH _dPolicyID_CS _dSellingToken_CS _dSellingToken_TN _dPriceOfAsset _dMinADA =
+    SimpleSale
+        { sellerPaymentPKH = _dSellerPaymentPKH
+        , policyID_CS = _dPolicyID_CS
+        , sellingToken_CS = _dSellingToken_CS
+        , sellingToken_TN = _dSellingToken_TN
+        , priceOfAsset = _dPriceOfAsset
+        , minADA = _dMinADA
+        }
 
-data SimpleSale = SimpleSale
-  { sellerAddress :: LedgerApiV2.PubKeyHash
-  , policyID_CS :: CS
-  , sellingToken_CS :: CS
-  , sellingToken_TN :: TN
-  , priceOfAsset :: Integer
-  , minADA :: Integer
-  }
-
-PlutusTx.makeIsDataIndexed
-  ''SimpleSale
-  [ ('SimpleSale, 0)
-  ]
-
-PlutusTx.makeIsDataIndexed
-  ''SimpleSaleNT
-  [ ('SimpleSaleNT, 0)
-  ]
+--------------------------------------------------------------------------------
 
 {-# INLINEABLE parseSimpleSale #-}
 parseSimpleSale :: LedgerApiV2.TxOut -> LedgerApiV2.TxInfo -> Maybe SimpleSale
 parseSimpleSale o info = case LedgerContextV2.txOutDatum o of
-  LedgerApiV2.NoOutputDatum -> traceError "Found Collateral output but NoOutputDatum"
-  LedgerApiV2.OutputDatum (LedgerApiV2.Datum d) -> PlutusTx.fromBuiltinData d
-  LedgerApiV2.OutputDatumHash dh -> do
-    LedgerApiV2.Datum d <- LedgerContextV2.findDatum dh info
-    PlutusTx.fromBuiltinData d
+    LedgerApiV2.NoOutputDatum -> traceError "Found output but NoOutputDatum"
+    LedgerApiV2.OutputDatum (LedgerApiV2.Datum d) -> PlutusTx.fromBuiltinData d
+    LedgerApiV2.OutputDatumHash dh -> do
+        LedgerApiV2.Datum d <- LedgerContextV2.findDatum dh info
+        PlutusTx.fromBuiltinData d
 
 {-# INLINEABLE isEqSimpleSale #-}
 isEqSimpleSale :: SimpleSale -> SimpleSale -> P.Bool
 isEqSimpleSale a b =
-  (sellerAddress a == sellerAddress b)
-    && (policyID_CS a == policyID_CS b)
-    && (sellingToken_CS a == sellingToken_CS b)
-    && (sellingToken_TN a == sellingToken_TN b)
-    && (priceOfAsset a == priceOfAsset b)
-    && (minADA a == minADA b)
+    (sellerPaymentPKH a == sellerPaymentPKH b)
+        && (policyID_CS a == policyID_CS b)
+        && (sellingToken_CS a == sellingToken_CS b)
+        && (sellingToken_TN a == sellingToken_TN b)
+        && (priceOfAsset a == priceOfAsset b)
+        && (minADA a == minADA b)
+
+--------------------------------------------------------------------------------
 
 {-# INLINEABLE marketID_TN #-}
 marketID_TN :: LedgerApiV2.TokenName
 marketID_TN = LedgerApiV2.TokenName "MarketPolicyID"
+
+--------------------------------------------------------------------------------
+
+-- readStringDecodedAsPolicyIDRedeemer "{\"getRedeemer\":\"d87a9fd87980ff\"}"
+
+readStringDecodedAsPolicyIDRedeemer :: P.String -> P.IO PolicyIDRedeemer
+readStringDecodedAsPolicyIDRedeemer encoded = do
+    raw <- OffChainHelpers.readStringDecodedAsRedeemer encoded
+    P.putStrLn $ "Raw: " ++ P.show raw
+    let
+        result = LedgerApiV2.unsafeFromBuiltinData @PolicyIDRedeemer (LedgerApiV2.getRedeemer raw)
+    P.putStrLn $ "Result: " ++ P.show result
+    return result
+
+-- readStringDecodedAsPolicyNFTRedeemer "{\"getRedeemer\":\"d87a9fd87980ff\"}"
+
+readStringDecodedAsPolicyNFTRedeemer :: P.String -> P.IO MarketRedeemer
+readStringDecodedAsPolicyNFTRedeemer encoded = do
+    raw <- OffChainHelpers.readStringDecodedAsRedeemer encoded
+    P.putStrLn $ "Raw: " ++ P.show raw
+    let
+        result = LedgerApiV2.unsafeFromBuiltinData @MarketRedeemer (LedgerApiV2.getRedeemer raw)
+    P.putStrLn $ "Result: " ++ P.show result
+    return result
+
+-- readStringDecodedAsMarketValidatorDatum "{\"getDatum\":\"d8799f581cabfff883edcf7a2e38628015cebb72952e361b2c8a2262f7daf9c16e581c97646926632d88c2e18370b48b79929b733e51709b8cbdce65690b02581c018d8b7fd7241e65b515e2ece48fa453fd14f7e6319ebefbdcd3c6374443494458182c1a001a3f39ff\"}"
+readStringDecodedAsMarketValidatorDatum :: P.String -> P.IO SimpleSale
+readStringDecodedAsMarketValidatorDatum encoded = do
+    raw <- OffChainHelpers.readStringDecodedAsDatum encoded
+    P.putStrLn $ "Raw: " ++ P.show raw
+    let
+        result = LedgerApiV2.unsafeFromBuiltinData @SimpleSale (LedgerApiV2.getDatum raw)
+    P.putStrLn $ "Result: " ++ P.show result
+    return result

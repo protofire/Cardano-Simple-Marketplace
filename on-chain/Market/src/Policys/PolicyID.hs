@@ -24,139 +24,116 @@ import qualified Ledger.Ada as LedgerAda
 import Plutus.V1.Ledger.Value (assetClass)
 import qualified Plutus.V1.Ledger.Value as LedgerValue
 import Types
-import qualified Types as T
-
-data PolicyRedeemerMintIDType = PolicyRedeemerMintIDType
-
-instance Eq PolicyRedeemerMintIDType where
-  {-# INLINEABLE (==) #-}
-  PolicyRedeemerMintIDType == PolicyRedeemerMintIDType = True
-
-PlutusTx.unstableMakeIsData ''PolicyRedeemerMintIDType
-
-data PolicyRedeemerBurnIDType = PolicyRedeemerBurnIDType
-
-instance Eq PolicyRedeemerBurnIDType where
-  {-# INLINEABLE (==) #-}
-  PolicyRedeemerBurnIDType == PolicyRedeemerBurnIDType = True
-
-PlutusTx.unstableMakeIsData ''PolicyRedeemerBurnIDType
-
-data PolicyIDRedeemer
-  = PolicyRedeemerMintID PolicyRedeemerMintIDType
-  | PolicyRedeemerBurnID PolicyRedeemerBurnIDType
-
-instance Eq PolicyIDRedeemer where
-  {-# INLINEABLE (==) #-}
-  PolicyRedeemerMintID rmtx1 == PolicyRedeemerMintID rmtx2 = rmtx1 == rmtx2
-  PolicyRedeemerBurnID rmtx1 == PolicyRedeemerBurnID rmtx2 = rmtx1 == rmtx2
-  _ == _ = False
-
-PlutusTx.makeIsDataIndexed
-  ''PolicyIDRedeemer
-  [ ('PolicyRedeemerMintID, 1)
-  , ('PolicyRedeemerBurnID, 2)
-  ]
 
 -- Minting policy function
 {-# INLINEABLE mkPolicyID #-}
 mkPolicyID :: LedgerApiV2.ValidatorHash -> PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> ()
 mkPolicyID !marketValidatorHash !redRaw !ctxRaw =
-  let ------------------
-      !redeemer = LedgerApiV2.unsafeFromBuiltinData @PolicyIDRedeemer redRaw
-      !ctx = LedgerApiV2.unsafeFromBuiltinData @LedgerContextsV2.ScriptContext ctxRaw
-      !info = LedgerContextsV2.scriptContextTxInfo ctx
-      ------------------
-      !marketValidatorAddress = Ledger.scriptHashAddress marketValidatorHash
-      ------------------
-      !marketPolicyID_CS = LedgerContextsV2.ownCurrencySymbol ctx
-      !marketID_AC = LedgerValue.AssetClass (marketPolicyID_CS, T.marketID_TN)
-      ------------------
-      !valueFor_Mint_Market_ID = LedgerValue.assetClassValue marketID_AC 1
-   in ------------------
-      if case redeemer of
-        PolicyRedeemerMintID _ ->
-          --   ---------------------
-          traceIfFalse "not isMintingMarketID" isMintingMarketID
-            && traceIfFalse "not isCorrect_Output_Market_Datum" isCorrect_Output_Market_Datum
-            && traceIfFalse "not isCorrect_Output_Market_Value" isCorrect_Output_Market_Value
-            && traceIfFalse "expected zero Market inputs" (null inputs_Own_TxOuts)
-         where
-          ------------------
-          !inputs_Own_TxOuts =
-            [ LedgerApiV2.txInInfoResolved txInfoInput | txInfoInput <- LedgerApiV2.txInfoInputs info, let address = LedgerApiV2.txOutAddress (LedgerApiV2.txInInfoResolved txInfoInput)
-                                                                                                        in OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
-            ]
-          ------------------
-          !outputs_Own_TxOuts =
-            [ txOut | txOut <- LedgerApiV2.txInfoOutputs info, let address = LedgerApiV2.txOutAddress txOut
-                                                                in OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
-            ]
-          -- ------------------
-          -- !output_Own_TxOut_And_Market_Datum = case OnChainHelpers.getTxOuts_And_DatumTypes_From_TxOuts_By_AC
-          --     @T.SimpleSaleNT @T.SimpleSale
-          --     ctx
-          --     outputs_Own_TxOuts
-          --     marketID_AC
-          --     T.getTypeMarketNT of
-          --     [x] -> x
-          --     _ -> traceError "Expected exactly one Market output"
-          -- ------------------
-          -- !market_Datum_Out = OnChainHelpers.getDatum_In_TxOut_And_Datum output_Own_TxOut_And_Market_Datum
-          ------------------
-          getHashDatumInput :: LedgerContextsV2.TxOut
-          !getHashDatumInput = case outputs_Own_TxOuts of
-            [o] -> o
-            _ -> traceError "expected exactly one input"
-
-          market_Datum_In :: T.SimpleSale
-          !market_Datum_In = case T.parseSimpleSale getHashDatumInput info of
-            Nothing -> traceError "Datum not found"
-            Just x -> x
-
-          !sellingToken_AC = assetClass (sellingToken_CS market_Datum_In) (sellingToken_TN market_Datum_In)
-          isMintingMarketID :: Bool
-          !isMintingMarketID = OnChainHelpers.getUnsafeOwnMintingValue ctx `OnChainHelpers.isEqValue` valueFor_Mint_Market_ID
-          -----------------
-          isCorrect_Output_Market_Datum :: Bool
-          !isCorrect_Output_Market_Datum =
-            let !market_Datum_Out_Control =
-                  T.SimpleSale
-                    { sellerAddress = T.sellerAddress market_Datum_In
-                    , policyID_CS = T.policyID_CS market_Datum_In
-                    , sellingToken_CS = T.sellingToken_CS market_Datum_In
-                    , sellingToken_TN = T.sellingToken_TN market_Datum_In
-                    , priceOfAsset = T.priceOfAsset market_Datum_In
-                    , minADA = T.minADA market_Datum_In
-                    }
-             in market_Datum_In `T.isEqSimpleSale` market_Datum_Out_Control
-          ----------------
-          isCorrect_Output_Market_Value :: Bool
-          !isCorrect_Output_Market_Value =
-            let ---------------------
-                !policyID = LedgerValue.assetClassValue marketID_AC 1
-                --------------------
-                !sellingValue = LedgerValue.assetClassValue sellingToken_AC 1
-                ---------------------
-                !minADAFromDatum = T.minADA market_Datum_In
-                !valueMinADA = LedgerAda.lovelaceValueOf minADAFromDatum
-                ---------------------
-                !valueFor_Market_Datum_Out_Control = valueMinADA <> policyID <> sellingValue
-                ---------------------
-                !valueOf_Market_Out = LedgerApiV2.txOutValue getHashDatumInput -- OnChainHelpers.getValue_In_TxOut_And_Datum output_Own_TxOut_And_Market_Datum
-             in valueOf_Market_Out `OnChainHelpers.isEqValue` valueFor_Market_Datum_Out_Control
+    let
         ------------------
-        PolicyRedeemerBurnID _ ->
-          traceIfFalse "not isBurningMarketID" isBurningMarketID
-         where
-          --   ------------------
-          !valueForBurnMarketID = LedgerValue.assetClassValue marketID_AC (negate 1)
-          ---------------------
-          isBurningMarketID :: Bool
-          isBurningMarketID = OnChainHelpers.getUnsafeOwnMintingValue ctx `OnChainHelpers.isEqValue` valueForBurnMarketID
-          --   -----------------
-        then ()
-        else error ()
+        !redeemer = LedgerApiV2.unsafeFromBuiltinData @PolicyIDRedeemer redRaw
+        !ctx = LedgerApiV2.unsafeFromBuiltinData @LedgerContextsV2.ScriptContext ctxRaw
+        !info = LedgerContextsV2.scriptContextTxInfo ctx
+        ------------------
+        !marketValidatorAddress = Ledger.scriptHashAddress marketValidatorHash
+        ------------------
+        !marketPolicyID_CS = LedgerContextsV2.ownCurrencySymbol ctx
+        !marketID_AC = LedgerValue.AssetClass (marketPolicyID_CS, marketID_TN)
+        ------------------
+        !valueFor_Mint_Market_ID = LedgerValue.assetClassValue marketID_AC 1
+    in
+        ------------------
+        if case redeemer of
+            PolicyRedeemerMintID _ ->
+                --   ---------------------
+                traceIfFalse "not isMintingMarketID" isMintingMarketID
+                    && traceIfFalse "not isCorrect_Output_Market_Datum" isCorrect_Output_Market_Datum
+                    && traceIfFalse "not isCorrect_Output_Market_Value" isCorrect_Output_Market_Value
+                    && traceIfFalse "expected zero Market inputs" (null inputs_Own_TxOuts)
+                where
+                    ------------------
+                    !inputs_Own_TxOuts =
+                        [ LedgerApiV2.txInInfoResolved txInfoInput | txInfoInput <- LedgerApiV2.txInfoInputs info, let
+                                                                                                                    address = LedgerApiV2.txOutAddress (LedgerApiV2.txInInfoResolved txInfoInput)
+                                                                                                                   in
+                                                                                                                    OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
+                        ]
+                    ------------------
+                    !outputs_Own_TxOuts =
+                        [ txOut | txOut <- LedgerApiV2.txInfoOutputs info, let
+                                                                            address = LedgerApiV2.txOutAddress txOut
+                                                                           in
+                                                                            OnChainHelpers.isScriptAddress address && address == marketValidatorAddress
+                        ]
+                    -- ------------------
+                    !output_Own_TxOut_And_Market_Datum = case OnChainHelpers.getTxOuts_And_DatumTypes_From_TxOuts_By_AC'
+                        @SimpleSale
+                        ctx
+                        outputs_Own_TxOuts
+                        marketID_AC of
+                        [x] -> x
+                        _ -> traceError "Expected exactly one Market output"
+                    ------------------
+                    !market_Datum_Out = OnChainHelpers.getDatum_In_TxOut_And_Datum output_Own_TxOut_And_Market_Datum
+                    ------------------
+                    -- getHashDatumInput :: LedgerContextsV2.TxOut
+                    -- !getHashDatumInput = case outputs_Own_TxOuts of
+                    --   [o] -> o
+                    --   _ -> traceError "expected exactly one input"
+
+                    -- market_Datum_In :: SimpleSale
+                    -- !market_Datum_In = case parseSimpleSale getHashDatumInput info of
+                    --   Nothing -> traceError "Datum not found"
+                    --   Just x -> x
+
+                    !sellingToken_AC = assetClass (sellingToken_CS market_Datum_Out) (sellingToken_TN market_Datum_Out)
+
+                    isMintingMarketID :: Bool
+                    !isMintingMarketID = OnChainHelpers.getUnsafeOwnMintingValue ctx `OnChainHelpers.isEqValue` valueFor_Mint_Market_ID
+                    -----------------
+                    isCorrect_Output_Market_Datum :: Bool
+                    !isCorrect_Output_Market_Datum =
+                        let
+                            !market_Datum_Out_Control =
+                                SimpleSale
+                                    { sellerPaymentPKH = sellerPaymentPKH market_Datum_Out
+                                    , policyID_CS = marketPolicyID_CS
+                                    , sellingToken_CS = sellingToken_CS market_Datum_Out
+                                    , sellingToken_TN = sellingToken_TN market_Datum_Out
+                                    , priceOfAsset = priceOfAsset market_Datum_Out
+                                    , minADA = minADA market_Datum_Out
+                                    }
+                        in
+                            market_Datum_Out `isEqSimpleSale` market_Datum_Out_Control
+                    ----------------
+                    isCorrect_Output_Market_Value :: Bool
+                    !isCorrect_Output_Market_Value =
+                        let
+                            ---------------------
+                            !policyID = LedgerValue.assetClassValue marketID_AC 1
+                            --------------------
+                            !sellingValue = LedgerValue.assetClassValue sellingToken_AC 1
+                            ---------------------
+                            !minADAFromDatum = minADA market_Datum_Out
+                            !valueMinADA = LedgerAda.lovelaceValueOf minADAFromDatum
+                            ---------------------
+                            !valueFor_Market_Datum_Out_Control = valueMinADA <> policyID <> sellingValue
+                            ---------------------
+                            !valueOf_Market_Out = OnChainHelpers.getValue_In_TxOut_And_Datum output_Own_TxOut_And_Market_Datum
+                        in
+                            valueOf_Market_Out `OnChainHelpers.isEqValue` valueFor_Market_Datum_Out_Control
+            ------------------
+            PolicyRedeemerBurnID _ ->
+                traceIfFalse "not isBurningMarketID" isBurningMarketID
+                where
+                    --   ------------------
+                    !valueForBurnMarketID = LedgerValue.assetClassValue marketID_AC (negate 1)
+                    ---------------------
+                    isBurningMarketID :: Bool
+                    isBurningMarketID = OnChainHelpers.getUnsafeOwnMintingValue ctx `OnChainHelpers.isEqValue` valueForBurnMarketID
+                    --   -----------------
+            then ()
+            else error ()
 
 -- Optimized minting policy
 {-# INLINEABLE policy_ID #-}
@@ -166,15 +143,15 @@ policy_ID marketValidatorHash = Plutonomy.optimizeUPLC $ Plutonomy.mintingPolicy
 {-# INLINEABLE original_policy_ID #-}
 original_policy_ID :: LedgerApiV2.ValidatorHash -> Plutonomy.MintingPolicy
 original_policy_ID marketValidatorHash =
-  Plutonomy.mkMintingPolicyScript $
-    $$(PlutusTx.compile [||mkPolicyID||])
-      `PlutusTx.applyCode` PlutusTx.liftCode marketValidatorHash
+    Plutonomy.mkMintingPolicyScript $
+        $$(PlutusTx.compile [||mkPolicyID||])
+            `PlutusTx.applyCode` PlutusTx.liftCode marketValidatorHash
 
 {-# INLINEABLE mkWrappedPolicy #-}
 mkWrappedPolicy :: PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> ()
 mkWrappedPolicy txHash = mkPolicyID valHash
- where
-  valHash = PlutusTx.unsafeFromBuiltinData txHash :: LedgerApiV2.ValidatorHash
+    where
+        valHash = PlutusTx.unsafeFromBuiltinData txHash :: LedgerApiV2.ValidatorHash
 
 policyIdCode :: PlutusTx.CompiledCode (PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> PlutusTx.BuiltinData -> ())
 policyIdCode = Plutonomy.optimizeUPLC $$(PlutusTx.compile [||mkWrappedPolicy||])
