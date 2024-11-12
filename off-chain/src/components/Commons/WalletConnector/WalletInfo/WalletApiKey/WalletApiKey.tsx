@@ -17,7 +17,7 @@ const WalletApiKey: React.FC<Props> = ({}) => {
                     onClick={() => {
                         if (walletStore.isGettingWalletsDone === true) handleOpen();
                     }}
-                    className="text-l font-bold mb-4 text-white"
+                    className={styles.apiKey}
                 >
                     Api Key
                 </button>

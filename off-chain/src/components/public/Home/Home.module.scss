@@ -1,120 +1,86 @@
 @use '@example/styles/shared.module.scss';
 
-.content {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    gap: 24px;
-
-    .title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 6px;
-    }
-
-    .subTitle {
-        font-size: 18px;
-        font-weight: 400;
-        margin-bottom: 6px;
-    }
-
-    .text {
-        font-size: small;
-    }
-
-    .createContainer {
-        display: flex;
-        gap: 12px;
-        flex-direction: column;
-        width: 400px;
-
-        input {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            width: 235px;
-        }
-    }
-
-    .listContainer {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        .item {
-            display: flex;
-            align-items: center;
-            padding: 8px;
-            gap: 12px;
-            .itemID {
-                width: 50px;
-                font-size: small;
-            }
-            .txHash {
-                width: 100px;
-                font-size: small;
-            }
-            .pkh {
-                width: 100px;
-                font-size: small;
-            }
-            .value {
-                width: 100px;
-                font-size: small;
-            }
-
-            input {
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                width: 50px;
-            }
-        }
-    }
+/* Home.module.scss */
+.main {
+  padding-top: 6rem; /* pt-24 */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+  background-color: #f3f4f6; /* bg-gray-100 */
+  min-height: 100vh; /* min-h-screen */
+  
+  @media (min-width: 640px) { /* sm breakpoint */
+    padding-left: 2rem; /* sm:px-8 */
+    padding-right: 2rem;
+  }
+  
+  @media (min-width: 1024px) { /* lg breakpoint */
+    padding-left: 4rem; /* lg:px-16 */
+    padding-right: 4rem;
+  }
 }
-.elem {
-  padding: 1rem;
-}
-.full_width_header {
-  width: 100%;
-  padding: 1rem;
+
+.navbar {
+  position: fixed;
   top: 0;
   left: 0;
-  background-color: lightblue; /* Color de fondo opcional */
-  color: black; /* Color de texto opcional */
-  z-index: 1000; /* Para que el header esté sobre otros elementos */
-}
-// ModalStyles.scss
-.modal {
-    padding: 20px;
-    border-radius: 4px;
-    max-width: 500px;
-    width: 100%;
-    background-color: white;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    textarea {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 100%;
-        height: 150px;
-    }
-    .txHash {
-        font-size: small;
-    }
-    .txStatus {
-        font-size: small;
-    }
+  width: 100%;
+  background-color: #1f2937; /* bg-gray-900 */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem; /* p-4 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+  z-index: 10;
 }
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.buttonContainer {
+  display: flex;
+  gap: 1rem; /* space-x-4 */
 }
+
+.button {
+  font-weight: 600; /* font-semibold */
+  font-size: 1.125rem; /* text-lg */
+  padding: 0.5rem 1.5rem; /* py-2 px-6 */
+  border-radius: 0.5rem; /* rounded-lg */
+  transition: all 0.2s ease-in-out; /* transition-all duration-200 ease-in-out */
+  transform: scale(1);
+  
+  &.buy {
+    background: linear-gradient(to right, #34d399, #059669); /* bg-gradient-to-r from-green-400 to-green-600 */
+    color: white;
+  }
+  
+  &.sell {
+    background: linear-gradient(to right, #f87171, #dc2626); /* bg-gradient-to-r from-red-400 to-red-600 */
+    color: white;
+  }
+  
+  &.inactive {
+    background-color: #374151; /* bg-gray-700 */
+    color: #d1d5db; /* text-gray-300 */
+    
+    &:hover {
+      background-color: #4b5563; /* hover:bg-gray-600 */
+    }
+  }
+
+  &:active {
+    transform: scale(0.95); /* active:scale-95 */
+  }
+}
+
+.walletConnector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* space-x-2 */
+}
+
+.content {
+  background-color: #f3f4f6; /* bg-gray-100 */
+  color: #1f2937; /* text-gray-900 */
+  font-family: sans-serif;
+  padding: 1rem; /* p-4 */
+}
+
