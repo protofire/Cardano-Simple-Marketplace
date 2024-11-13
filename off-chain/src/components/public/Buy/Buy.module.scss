@@ -2,180 +2,180 @@
 
 /* Buy.module.scss */
 .section {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .header {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
 }
 
 .tokenGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-  padding: 1rem;
+    display: grid;
+    justify-content: center;
+    padding: 1rem;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(5, 1fr);
+        justify-content: center;
+    }
 }
 
 .tokenCard {
-  background-color: #27272a;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: white;
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    width: 12rem;
+    height: 16rem;
+    background-color: #27272a;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .tokenImage {
-  width: 6rem;
-  height: 6rem;
-  margin-bottom: 1rem;
-  border-radius: 50%;
-  object-fit: contain;
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    object-fit: contain;
 }
 
 .tokenName {
-  text-align: center;
-  font-size: 1.125rem;
-  font-weight: 600;
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 600;
 }
 
 .price {
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
 }
 
 .buyButton {
-  background-color: #047857;
-  color: white;
-  font-weight: 600;
-  padding: 0.25rem 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #065f46;
-  }
-  &:active {
-    transform: scale(0.95);
-  }
+    width: 8rem;
+    height: 2rem;
+    background-color: #047857;
+    color: white;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #065f46;
+    }
+    &:active {
+        transform: scale(0.95);
+    }
 }
 .withdrawButton {
-  background-color: #3DA5D9;
-  color: white;
-  font-weight: 600;
-  padding: 0.25rem 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #2896cc;
-  }
-  &:active {
-    transform: scale(0.95);
-  }
+    width: 8rem;
+    height: 2rem;
+    background-color: #3da5d9;
+    color: white;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #2896cc;
+    }
+    &:active {
+        transform: scale(0.95);
+    }
 }
 
-.syncButton { 
-  background-color: #fec601;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #DFAF01;
-  }
-  &:disabled { 
-    background-color: #9ca3af;
-    cursor: not-allowed;
-  }
+.syncButton {
+    background-color: #fec601;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #dfaf01;
+    }
+    &:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+    }
 }
 
 .modal {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-  max-width: 32rem;
-  width: 100%;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    max-width: 32rem;
+    width: 100%;
 }
 
 .overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(31, 41, 55, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(31, 41, 55, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modalHeader {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1f2937;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
 }
 
 .textarea {
-  width: 100%;
-  height: 6rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  padding: 0.5rem;
-  resize: none;
-  color: #374151;
+    width: 100%;
+    height: 6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
+    resize: none;
+    color: #374151;
 }
 
 .txHash {
-  background-color: #e5e7eb;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  color: #1f2937;
+    background-color: #e5e7eb;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    color: #1f2937;
 }
 
 .txStatusConfirmed {
-  color: #10b981;
-  font-weight: 600;
+    color: #10b981;
+    font-weight: 600;
 }
 
 .txStatusError {
-  color: #ef4444;
-  font-weight: 600;
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .txStatusWaiting {
-  color: #f59e0b;
-  font-weight: 600;
+    color: #f59e0b;
+    font-weight: 600;
 }
 
 .closeButton {
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  margin-top: 1rem;
-  transition: background-color 0.2s;
-  &:hover {
-    background-color: #2563eb;
-  }
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #2563eb;
+    }
 }
 // ModalStyles.scss
 .modal {

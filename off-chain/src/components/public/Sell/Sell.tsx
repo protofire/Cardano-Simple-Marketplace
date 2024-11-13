@@ -215,7 +215,7 @@ export const Sell = () => {
                       value={inputValues[asset.CS + asset.TN_Hex] || ''}
                       onChange={(e) => handleInputChange(e, asset.CS + asset.TN_Hex)}
                       type="text"
-                      placeholder="Enter price"
+                      placeholder="Lovelace"
                       className={styles.input}
                     />
                     <button className={styles.sellButton} onClick={() => handleBtnSellTx(asset)}>

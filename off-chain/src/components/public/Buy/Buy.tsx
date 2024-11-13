@@ -3,7 +3,7 @@ import { useContext, useState } from 'react';
 import LoaderButton from '@/components/Commons/LoaderButton/LoaderButton';
 import ModalTransaction from '@/components/Commons/ModalTransaction/ModalTransaction';
 import { AppStateContext } from '@/pages/_app';
-import { mintingPolicyID_TN } from '@example/src/lib/Commons/Constants/onchain';
+import { lovelaceToAda, mintingPolicyID_TN } from '@example/src/lib/Commons/Constants/onchain';
 import { BuyMarketNFTTxParams, WithdrawMarketNFTTxParams } from '@example/src/lib/Commons/Constants/transactions';
 import { MarketNFTEntity } from '@example/src/lib/SmartDB/Entities/MarketNFT.Entity';
 import { MarketNFTApi } from '@example/src/lib/SmartDB/FrontEnd/MarketNFT.FrontEnd.Api.Calls';
@@ -260,7 +260,7 @@ export const Buy = () => {
                   )}
                 </div>
                 <p className={styles.tokenName}>{formatTokenNameHexToStr(tokenToBuy.metadata.TN_Hex)}</p>
-                <div className={styles.price}>{tokenToBuy.entity.priceOfAsset.toString()} ₳</div>
+                <div className={styles.price}>{(Number(tokenToBuy.entity.priceOfAsset)/Number(lovelaceToAda)).toFixed(6)} ₳</div>
                 {walletStore.info?.pkh === tokenToBuy.entity.sellerPaymentPKH ? (
                   <button className={styles.withdrawButton} onClick={() => handleBtnWithdrawTx(tokenToBuy)}>
                     Withdraw

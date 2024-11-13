@@ -1,7 +1,8 @@
 @use '@example/styles/shared.module.scss';
 
 .walletApiKeyContainer {
-    overflow-y: auto;
+    background-color: #1f2937; /* bg-gray-900 */
+    color: #fff;
     height: 330px;
     display: flex;
     flex-direction: column;
@@ -9,14 +10,37 @@
     align-items: center;
 }
 
-.apiKey{
-    padding:0.7rem;
+.buttonCopy {
+    background-color: #0E7C7B; // bg-gray-800
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
+
+    &:hover {
+        background-color: #0A5C5A;
+    }
+}
+
+.buttonClose {
+    background-color: #d62246;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin-top: 0.1rem;
+
+    &:hover {
+        background-color: #9f1934;
+    }
+}
+.apiKey {
+    padding: 0.7rem;
     background-color: #2d3748; // bg-gray-800
     border-radius: 0.375rem; // rounded-md
     font-weight: 700;
     color: white;
     cursor: pointer;
-    display:center;
+    display: center;
     transition: background-color 0.3s ease;
 
     &:hover {
@@ -25,11 +49,12 @@
 }
 // ModalStyles.scss
 .modal {
+    background-color: #1f2937; /* bg-gray-900 */
+    color: #fff;
     padding: 20px;
     border-radius: 4px;
     max-width: 350px;
     width: 100%;
-    background-color: white;
     height: 350px;
     display: flex;
     flex-direction: column;
