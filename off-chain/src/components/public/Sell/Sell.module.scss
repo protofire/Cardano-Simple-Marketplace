@@ -4,23 +4,23 @@
 
 .section {
     background-color: white;
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-    padding: 1.5rem; /* p-6 */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
 }
 
 .sellTokenHeader {
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 600; /* font-semibold */
-    color: #1f2937; /* text-gray-800 */
-    margin-bottom: 1rem; /* mb-4 */
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
 }
 
 .assetGrid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1rem; /* gap-4 */
-    padding: 1rem; /* p-4 */
+    gap: 1rem;
+    padding: 1rem;
 
     @media (min-width: 1024px) {
         grid-template-columns: repeat(5, 1fr);
@@ -29,31 +29,31 @@
 }
 
 .assetCard {
-    width: 12rem; /* w-24 */
-    height: 16rem; /* h-24 */
-    background-color: #27272a; /* bg-zinc-800 */
-    border-radius: 0.5rem; /* rounded-lg */
-    padding: 1.5rem; /* p-4 */
+    width: 12rem;
+    height: 16rem;
+    background-color: #27272a;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     color: white;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15); /* shadow-lg */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
 .assetImage {
-    width: 6rem; /* w-24 */
-    height: 6rem; /* h-24 */
-    margin-bottom: 1rem; /* mb-4 */
-    border-radius: 50%; /* rounded-full */
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 1rem;
+    border-radius: 50%;
     object-fit: contain;
 }
 
 .assetName {
     text-align: center;
-    font-size: 1.125rem; /* text-lg */
-    font-weight: 600; /* font-semibold */
-    margin-bottom: 0.5rem; /* mb-2 */
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
 }
 
 .inputContainer {
@@ -64,100 +64,100 @@
 }
 
 .input {
-    background-color: #3f3f46; /* bg-zinc-700 */
+    background-color: #3f3f46;
     color: white;
-    border-radius: 0.5rem; /* rounded-lg */
-    padding: 0.25rem 0.75rem; /* px-3 py-1 */
-    width: 80%; /* w-2/3 */
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    width: 80%;
     outline: none;
     &:focus {
-        border: 2px solid #10b981; /* focus:ring-green-500 */
+        border: 2px solid #10b981;
     }
 }
 
 .sellButton {
-    width: 4rem; /* w-24 */
-    height: 2rem; /* h-24 */
-    background-color: #dc2626; /* bg-green-600 */
+    width: 4rem;
+    height: 2rem;
+    background-color: #dc2626;
     color: white;
-    font-weight: 600; /* font-semibold */
-    border-radius: 0.5rem; /* rounded-lg */
-    margin-top: 0.5rem; /* ml-2 */
+    font-weight: 600;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
     transition: background-color 0.2s;
     &:hover {
-        background-color: #af1d1d; /* hover:bg-green-700 */
+        background-color: #af1d1d;
     }
     &:active {
-        transform: scale(0.95); /* active:scale-95 */
+        transform: scale(0.95);
     }
 }
 
 .modal {
     background-color: white;
-    padding: 1.5rem; /* p-6 */
-    border-radius: 0.5rem; /* rounded-lg */
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* shadow-lg */
-    max-width: 32rem; /* max-w-lg */
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    max-width: 32rem;
     width: 100%;
 }
 
 .overlay {
     position: fixed;
     inset: 0;
-    background-color: rgba(31, 41, 55, 0.75); /* bg-gray-800 bg-opacity-75 */
+    background-color: rgba(31, 41, 55, 0.75);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .modalHeader {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 600; /* font-semibold */
-    color: #1f2937; /* text-gray-800 */
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
 }
 
 .textarea {
     width: 100%;
-    height: 6rem; /* h-24 */
-    border: 1px solid #d1d5db; /* border-gray-300 */
-    border-radius: 0.375rem; /* rounded */
-    padding: 0.5rem; /* p-2 */
+    height: 6rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem;
     resize: none;
-    color: #374151; /* text-gray-700 */
+    color: #374151;
 }
 
 .txHash {
-    background-color: #e5e7eb; /* bg-gray-200 */
-    padding: 0.5rem; /* p-2 */
-    border-radius: 0.375rem; /* rounded */
-    color: #1f2937; /* text-gray-800 */
+    background-color: #e5e7eb;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    color: #1f2937;
 }
 
 .txStatusConfirmed {
-    color: #10b981; /* text-green-500 */
-    font-weight: 600; /* font-semibold */
+    color: #10b981;
+    font-weight: 600;
 }
 
 .txStatusError {
-    color: #ef4444; /* text-red-500 */
-    font-weight: 600; /* font-semibold */
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .txStatusWaiting {
-    color: #f59e0b; /* text-yellow-500 */
-    font-weight: 600; /* font-semibold */
+    color: #f59e0b;
+    font-weight: 600;
 }
 
 .closeButton {
-    background-color: #3b82f6; /* bg-blue-500 */
+    background-color: #3b82f6;
     color: white;
-    font-weight: 600; /* font-semibold */
-    padding: 0.5rem 1rem; /* py-2 px-4 */
-    border-radius: 0.375rem; /* rounded */
-    margin-top: 1rem; /* mt-4 */
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    margin-top: 1rem;
     transition: background-color 0.2s;
     &:hover {
-        background-color: #2563eb; /* hover:bg-blue-600 */
+        background-color: #2563eb;
     }
 }
 // ModalStyles.scss

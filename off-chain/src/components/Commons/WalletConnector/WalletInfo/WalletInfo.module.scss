@@ -7,37 +7,43 @@
     margin-bottom: 0.4rem;
 }
 
+.buttonGrid {
+    row-gap: 1rem;
+    display: grid;
+    align-items: center;
+}
+
 .walletDisc {
-    padding:0.7rem;
-    background-color: #2d3748; // bg-gray-800
-    border-radius: 0.375rem; // rounded-md
+    padding: 0.7rem;
+    background-color: #2d3748;
+    border-radius: 0.375rem;
     font-weight: 700;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
 
     &:hover {
-        background-color: #4a5568; // bg-gray-700
+        background-color: #4a5568;
     }
 }
 .walletDetails {
-    padding:0.7rem;
-    background-color: #2d3748; // bg-gray-800
-    border-radius: 0.375rem; // rounded-md
+    padding: 0.7rem;
+    background-color: #2d3748;
+    border-radius: 0.375rem;
     font-weight: 700;
     color: white;
     cursor: pointer;
-    display:flex;
+    display: flex;
     transition: background-color 0.3s ease;
 
     &:hover {
-        background-color: #4a5568; // bg-gray-700
+        background-color: #4a5568;
     }
 }
 
 .grid {
     display: grid;
-    gap: 1rem; // gap-y-4
+    gap: 1rem;
     grid-template-columns: 1fr;
     align-items: center;
 }

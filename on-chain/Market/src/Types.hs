@@ -130,17 +130,6 @@ PlutusTx.makeIsDataIndexed
     [ ('SimpleSale, 0)
     ]
 
--- newtype SimpleSaleNT = SimpleSaleNT SimpleSale
-
--- PlutusTx.makeIsDataIndexed
---   ''SimpleSaleNT
---   [ ('SimpleSaleNT, 0)
---   ]
-
--- {-# INLINEABLE getTypeSimpleSaleNT #-}
--- getTypeSimpleSaleNT :: SimpleSaleNT -> SimpleSale
--- getTypeSimpleSaleNT (SimpleSaleNT t) = t
-
 {-# INLINEABLE mkTypeSimpleSale #-}
 mkTypeSimpleSale ::
     LedgerApiV2.PubKeyHash ->

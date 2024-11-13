@@ -6,7 +6,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #FFF;
+    color: #fff;
     border-radius: 0.375rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
@@ -26,7 +26,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     margin-top: 0.25rem;
-    color: #FFF;
+    color: #fff;
 }
 
 .modal {
@@ -43,7 +43,8 @@
 }
 
 .modalContent {
-    background-color: #27272a;
+    background-color: #1f2937;
+    margin-top: 10%;
     padding: 1rem;
     border-radius: 0.5rem;
     display: flex;
@@ -67,7 +68,7 @@
 }
 
 .inputField {
-    background-color: #FFF;
+    background-color: #fff;
     border-radius: 0.375rem;
     padding: 0.5rem;
     width: 100%;
@@ -97,4 +98,11 @@
     &:hover {
         background-color: #9f1934;
     }
+}
+
+.grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    align-items: center;
 }
