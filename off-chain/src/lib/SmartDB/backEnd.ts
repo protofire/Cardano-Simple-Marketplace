@@ -1,4 +1,3 @@
-
 import { EndpointsManager, initBackEnd as initBackEndSmartDB } from 'smart-db/backEnd';
 export * from 'smart-db/backEnd';
 export * from './BackEnd/index';
