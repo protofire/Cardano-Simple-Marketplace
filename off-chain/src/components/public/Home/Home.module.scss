@@ -56,6 +56,10 @@
     background: linear-gradient(to right, #f87171, #dc2626);
     color: white;
   }
+
+  &.invalid{
+    background-color: #313947;
+  }
   
   &.inactive {
     background-color: #374151;

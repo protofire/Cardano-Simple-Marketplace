@@ -68,7 +68,7 @@ const WalletConnector: React.FC = () => {
         <HiUserCircle className={styles.icon} />
         <p className={styles.walletAddress}>
           {/* If wallet address is available, display last part of the address */}
-          {walletStore.info?.address ? `...${walletStore.info?.address.substring(102)}` : ''}
+          {walletStore.info?.address ? `...${walletStore.info?.address.substring(102)}` : 'Connect your wallet'}
         </p>
         {/* Show loading button if status is loading or any wallet connection process is ongoing */}
         {(status === 'loading' || walletStore.isGettingWalletsDone === false || walletStore.isConnecting || walletStore.isLoadingAnyData) && <LoaderButton />}

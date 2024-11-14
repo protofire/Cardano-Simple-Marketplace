@@ -1,7 +1,7 @@
 import { useContext, useEffect } from 'react';
 import { Sell } from '@/components/public/Sell/Sell';
 import { MarketNFTEntity } from '@example/src/lib/SmartDB/Entities/MarketNFT.Entity';
-import { BaseSmartDBFrontEndApiCalls, CS, useWalletStore } from 'smart-db';
+import { BaseSmartDBFrontEndApiCalls, CS, pushWarningNotification, useWalletStore } from 'smart-db';
 import WalletConnector from '../../Commons/WalletConnector/WalletConnector';
 import styles from './Home.module.scss';
 
@@ -86,14 +86,14 @@ export default function Home() {
         {/* Buttons for Buy and Sell, aligned to the left */}
         <div className={styles.buttonContainer}>
           <button 
-            onClick={() => handleClickMenuClass('Buy')} 
-            className={`${menuClass === 'Buy' ? styles.buy : styles.inactive} ${styles.button}`}
+            onClick={walletStore.isConnected ? () => handleClickMenuClass('Buy') : () => {pushWarningNotification("Menu",'Connect your wallet')}} 
+            className={walletStore.isConnected ? (`${menuClass === 'Buy' ? styles.buy : styles.inactive} ${styles.button}`) : (`${styles.invalid} ${styles.button}`)}
           >
             Buy
           </button>
           <button 
-            onClick={walletStore.isConnected ? () => handleClickMenuClass('Sell') : () => {}} 
-            className={`${menuClass === 'Sell' ? styles.sell : styles.inactive} ${styles.button}`}
+            onClick={walletStore.isConnected ? () => handleClickMenuClass('Sell') : () => {pushWarningNotification("Menu",'Connect your wallet')}} 
+            className={walletStore.isConnected ? (`${menuClass === 'Sell' ? styles.buy : styles.inactive} ${styles.button}`) : (`${styles.invalid} ${styles.button}`)}
           >
             Sell
           </button>

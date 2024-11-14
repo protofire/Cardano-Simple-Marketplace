@@ -1,0 +1,40 @@
+.price {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.sellButton {
+    width: 4rem;
+    height: 2rem;
+    background-color: #dc2626;
+    color: white;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: #af1d1d;
+    }
+    &:active {
+        transform: scale(0.95);
+    }
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    .input {
+        background-color: #3f3f46;
+        color: white;
+        border-radius: 0.5rem;
+        padding: 0.25rem 0.75rem;
+        width: 80%;
+        outline: none;
+        &:focus {
+            border: 2px solid #10b981;
+        }
+    }
+}

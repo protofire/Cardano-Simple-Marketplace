@@ -16,83 +16,6 @@
     margin-bottom: 1rem;
 }
 
-.tokenGrid {
-    display: grid;
-    justify-content: center;
-    padding: 1rem;
-
-    @media (min-width: 1024px) {
-        grid-template-columns: repeat(5, 1fr);
-        justify-content: center;
-    }
-}
-
-.tokenCard {
-    width: 12rem;
-    height: 16rem;
-    background-color: #27272a;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-}
-
-.tokenImage {
-    width: 6rem;
-    height: 6rem;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    object-fit: contain;
-}
-
-.tokenName {
-    text-align: center;
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.price {
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 0.5rem;
-}
-
-.buyButton {
-    width: 8rem;
-    height: 2rem;
-    background-color: #047857;
-    color: white;
-    font-weight: 600;
-    padding: 0.25rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-    &:hover {
-        background-color: #065f46;
-    }
-    &:active {
-        transform: scale(0.95);
-    }
-}
-.withdrawButton {
-    width: 8rem;
-    height: 2rem;
-    background-color: #3da5d9;
-    color: white;
-    font-weight: 600;
-    padding: 0.25rem 1rem;
-    border-radius: 0.5rem;
-    transition: background-color 0.2s;
-    &:hover {
-        background-color: #2896cc;
-    }
-    &:active {
-        transform: scale(0.95);
-    }
-}
-
 .syncButton {
     background-color: #fec601;
     color: white;
@@ -109,107 +32,15 @@
     }
 }
 
-.modal {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-    max-width: 32rem;
-    width: 100%;
-}
-
-.overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(31, 41, 55, 0.75);
-    display: flex;
-    align-items: center;
+.tokenGrid {
+    display: grid;
     justify-content: center;
-}
+    padding: 1rem;
 
-.modalHeader {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.textarea {
-    width: 100%;
-    height: 6rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    padding: 0.5rem;
-    resize: none;
-    color: #374151;
-}
-
-.txHash {
-    background-color: #e5e7eb;
-    padding: 0.5rem;
-    border-radius: 0.375rem;
-    color: #1f2937;
-}
-
-.txStatusConfirmed {
-    color: #10b981;
-    font-weight: 600;
-}
-
-.txStatusError {
-    color: #ef4444;
-    font-weight: 600;
-}
-
-.txStatusWaiting {
-    color: #f59e0b;
-    font-weight: 600;
-}
-
-.closeButton {
-    background-color: #3b82f6;
-    color: white;
-    font-weight: 600;
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    margin-top: 1rem;
-    transition: background-color 0.2s;
-    &:hover {
-        background-color: #2563eb;
-    }
-}
-// ModalStyles.scss
-.modal {
-    padding: 20px;
-    border-radius: 4px;
-    max-width: 500px;
-    width: 100%;
-    background-color: white;
-    height: 350px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    textarea {
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 100%;
-        height: 150px;
-    }
-    .txHash {
-        font-size: small;
-    }
-    .txStatus {
-        font-size: small;
+    @media (min-width: 1024px) {
+        grid-template-columns: repeat(5, 1fr);
+        justify-content: center;
     }
 }
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+
