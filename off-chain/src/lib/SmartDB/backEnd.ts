@@ -6,6 +6,8 @@ export * from './Entities/index.BackEnd';
 // NOTE: It is very important that this file is used to import from all API endpoints
 // so that all necessary decorators of all classes are generated.
 
+//TODO: tratar de explicar con comentarios este codigo y lo que se puede hacer
+
 export function initBackEnd() {
     initBackEndSmartDB();
     const endpointsManager = EndpointsManager.getInstance();

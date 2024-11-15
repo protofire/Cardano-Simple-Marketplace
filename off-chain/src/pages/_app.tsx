@@ -49,9 +49,9 @@ export default function MyApp({ Component, pageProps }: AppProps<{ session?: Ses
         <AppStateContext.Provider value={{ appState, setAppState }}>
             {/* Provide session management using next-auth */}
             <SessionProvider session={pageProps.session} refetchInterval={0}>
-                {/* Provide the global store for state management */}
+                {/* Provide the global store from SmartDB for state management */}
                 <StoreProvider store={globalStore}>
-                    {/* Render the general app components */}
+                    {/* Run the general app component from SmartDB for init procedures */}
                     <AppGeneral />
                     {/* Include the React Notifications component for global notifications */}
                     <ReactNotifications />
