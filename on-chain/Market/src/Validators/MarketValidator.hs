@@ -7,8 +7,10 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 --------------------------------------------------------------------------------2
-{- HLINT ignore "Use camelCase"          -}  -- Ignore the warning to use camelCase
-{- HLINT ignore "Reduce duplication"          -}  -- Ignore the warning to reduce duplication
+{- HLINT ignore "Use camelCase"          -}
+-- Ignore the warning to use camelCase
+{- HLINT ignore "Reduce duplication"          -}
+-- Ignore the warning to reduce duplication
 --------------------------------------------------------------------------------2
 
 module Validators.MarketValidator where
@@ -84,7 +86,14 @@ mkMarket datumRaw redeemerRaw ctxRaw =
                 isCorrect_Input_SimpleSale_Datum :: Bool
                 !isCorrect_Input_SimpleSale_Datum =
                     let
-                        !callOption_Datum_Out_Control = datum_In
+                        !callOption_Datum_Out_Control =
+                            mkTypeSimpleSale
+                                (sellerPaymentPKH datum_In)
+                                (policyID_CS datum_In)
+                                (sellingToken_CS datum_In)
+                                (sellingToken_TN datum_In)
+                                (priceOfAsset datum_In)
+                                (minADA datum_In)
                     in
                         callOption_Datum_Out `isEqSimpleSale` callOption_Datum_Out_Control
                 ------------------
@@ -143,4 +152,5 @@ plutonomyValidator :: Plutonomy.Validator
 plutonomyValidator =
     Plutonomy.mkValidatorScript
         $$(PlutusTx.compile [||mkMarket||])
+
 --------------------------------------------------------------------------------
