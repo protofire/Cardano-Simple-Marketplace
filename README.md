@@ -1,5 +1,62 @@
-# Cardano Simple Marketplace: End-to-End Implementation of Smart DB Library
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a name="readme-top"></a>
+<!--
+*** Thanks for checking out the Best-README-Template. If you have a suggestion
+*** that would make this better, please fork the repo and create a pull request
+*** or simply open an issue with the tag "enhancement".
+*** Don't forget to give the project a star!
+*** Thanks again! Now go create something AMAZING! :D
+-->
 
+
+
+<!-- PROJECT SHIELDS -->
+<!--
+*** I'm using markdown "reference style" links for readability.
+*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
+*** See the bottom of this document for the declaration of the reference variables
+*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
+*** https://www.markdownguide.org/basic-syntax/#reference-style-links
+-->
+[![Contributors][contributors-shield]][contributors-url]
+[![Forks][forks-shield]][forks-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Issues][issues-shield]][issues-url]
+[![MIT License][license-shield]][license-url]
+[![LinkedIn][linkedin-shield]][linkedin-url]
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/protofire/Cardano-Simple-Marketplace">
+    <img src="images/logo.png" alt="Logo" width="250" height="250">
+  </a>
+
+<h3 align="center">Cardano Simple Marketplace</h3>
+
+  <p align="center">
+    An simple marketplace for yours NFTs.
+    <br />
+    <a href="https://protofire-docs.gitbook.io/developer-studio"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://youtu.be/C9Ge6xyf6-o">View Demo</a>
+    ·
+    <a href="https://github.com/protofire/Cardano-Simple-Marketplace/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/protofire/Cardano-Simple-Marketplace/issues">Request Feature</a>
+  </p>
+</div>
+
+## Overview
+
+Cardano Simple Marketplace is a decentralized application (dApp) built as an
+end-to-end implementation of the Smart DB Library, designed for Cardano
+blockchain integration. This marketplace allows users to buy and sell tokens
+(NFTs and fungible tokens) with full blockchain interaction, supporting both
+MongoDB and PostgreSQL backends.
+
+The application demonstrates how to use the Smart DB Library for managing
+tokens, metadata, and transactions in a Cardano-powered marketplace.
 ## Table of Contents
 
 - [Smart DB Library: Cardano Blockchain Integration Example](#smart-db-library-cardano-blockchain-integration-example)
@@ -15,16 +72,7 @@
   - [License](#license)
   - [Acknowledgements](#acknowledgements)
 
-## Introduction
 
-Cardano Simple Marketplace is a decentralized application (dApp) built as an
-end-to-end implementation of the Smart DB Library, designed for Cardano
-blockchain integration. This marketplace allows users to buy and sell tokens
-(NFTs and fungible tokens) with full blockchain interaction, supporting both
-MongoDB and PostgreSQL backends.
-
-The application demonstrates how to use the Smart DB Library for managing
-tokens, metadata, and transactions in a Cardano-powered marketplace.
 
 ## Features
 
@@ -115,3 +163,20 @@ support and valuable contributions to this project. This work is part of a
 funded project through Cardano Catalyst, a community-driven innovation platform.
 For more details on the proposal and its progress, please visit our proposal
 page on [IdeaScale](https://cardano.ideascale.com/c/idea/110478).
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[contributors-shield]: https://img.shields.io/github/contributors/protofire/Cardano-Simple-Marketplace.svg?style=for-the-badge
+[contributors-url]: https://github.com/protofire/Cardano-Simple-Marketplace/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/protofire/Cardano-Simple-Marketplace.svg?style=for-the-badge
+[forks-url]: https://github.com/protofire/Cardano-Simple-Marketplace/network/members
+[stars-shield]: https://img.shields.io/github/stars/protofire/Cardano-Simple-Marketplace.svg?style=for-the-badge
+[stars-url]: https://github.com/protofire/Cardano-Simple-Marketplace/stargazers
+[issues-shield]: https://img.shields.io/github/issues/protofire/Cardano-Simple-Marketplace.svg?style=for-the-badge
+[issues-url]: https://github.com/protofire/Cardano-Simple-Marketplace/issues
+[license-shield]: https://img.shields.io/github/license/protofire/Cardano-Simple-Marketplace.svg?style=for-the-badge
+[license-url]: https://github.com/protofire/Cardano-Simple-Marketplace/blob/master/LICENSE
+[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
+[linkedin-url]: https://www.linkedin.com/company/protofire-io/posts/?feedView=all
+[product-screenshot]: images/screenshot.png
+[usage-example]: images/example.png
