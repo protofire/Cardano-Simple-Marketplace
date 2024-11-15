@@ -91,21 +91,22 @@ mkPolicyID !marketValidatorHash !redRaw !ctxRaw =
                     !isCorrect_Output_Market_Datum =
                         let
                             !market_Datum_Out_Control =
-                                SimpleSale
-                                    { sellerPaymentPKH = sellerPaymentPKH market_Datum_Out
-                                    , policyID_CS = marketPolicyID_CS
-                                    , sellingToken_CS = sellingToken_CS market_Datum_Out
-                                    , sellingToken_TN = sellingToken_TN market_Datum_Out
-                                    , priceOfAsset = priceOfAsset market_Datum_Out
-                                    , minADA = minADA market_Datum_Out
-                                    }
+                                mkTypeSimpleSale 
+                                    (sellerPaymentPKH market_Datum_Out)
+                                    marketPolicyID_CS
+                                    (sellingToken_CS market_Datum_Out)
+                                    (sellingToken_TN market_Datum_Out)
+                                    (priceOfAsset market_Datum_Out)
+                                    (minADA market_Datum_Out)
+                                    
                         in
                             market_Datum_Out `isEqSimpleSale` market_Datum_Out_Control
 
                     -- Check if the market value is correct
                     isCorrect_Output_Market_Value :: Bool
                     !isCorrect_Output_Market_Value =
-                        let
+                         let
+                            -- Extract components of the value
                             !policyID = LedgerValue.assetClassValue marketID_AC 1
                             !sellingValue = LedgerValue.assetClassValue sellingToken_AC 1
                             !minADAFromDatum = minADA market_Datum_Out

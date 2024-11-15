@@ -53,24 +53,6 @@ type StakeCredentialPubKeyHash = LedgerApiV2.PubKeyHash
 
 --------------------------------------------------------------------------------2
 
--- instance Schema.ToSchema LedgerApiV2.Validator where
---   toSchema = Schema.FormSchemaUnit
---
--- -- TODO: para cuando vuelva a usar plutus-1.1.0, tengo que desactivar esto
--- -- instance Schema.ToSchema  LedgerAddress.Address where
--- --   toSchema = Schema.FormSchemaUnit
---
--- instance Schema.ToSchema LedgerApiV2.MintingPolicy where
---   toSchema = Schema.FormSchemaUnit
---
--- -- instance Schema.ToSchema LedgerApiV2.CurrencySymbol where
--- --     toSchema = Schema.FormSchemaUnit
---
--- -- instance Schema.ToSchema LedgerApiV2.TokenName where
--- --     toSchema = Schema.FormSchemaUnit
-
---------------------------------------------------------------------------------2
-
 data PolicyRedeemerMintIDType = PolicyRedeemerMintIDType
     deriving (P.Show, P.Eq)
 
@@ -114,9 +96,12 @@ data MarketRedeemer = Buy | Withdraw
 PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
 --------------------------------------------------------------------------------2
+marketPlaceVersion :: Integer
+marketPlaceVersion = 1
 
 data SimpleSale = SimpleSale
-    { sellerPaymentPKH :: LedgerApiV2.PubKeyHash
+    { version :: Integer
+    , sellerPaymentPKH :: LedgerApiV2.PubKeyHash
     , policyID_CS :: CS
     , sellingToken_CS :: CS
     , sellingToken_TN :: TN
@@ -141,7 +126,8 @@ mkTypeSimpleSale ::
     SimpleSale
 mkTypeSimpleSale _dSellerPaymentPKH _dPolicyID_CS _dSellingToken_CS _dSellingToken_TN _dPriceOfAsset _dMinADA =
     SimpleSale
-        { sellerPaymentPKH = _dSellerPaymentPKH
+        { version = marketPlaceVersion
+        , sellerPaymentPKH = _dSellerPaymentPKH
         , policyID_CS = _dPolicyID_CS
         , sellingToken_CS = _dSellingToken_CS
         , sellingToken_TN = _dSellingToken_TN
@@ -163,7 +149,8 @@ parseSimpleSale o info = case LedgerContextV2.txOutDatum o of
 {-# INLINEABLE isEqSimpleSale #-}
 isEqSimpleSale :: SimpleSale -> SimpleSale -> P.Bool
 isEqSimpleSale a b =
-    (sellerPaymentPKH a == sellerPaymentPKH b)
+    (version a == version b)
+        && (sellerPaymentPKH a == sellerPaymentPKH b)
         && (policyID_CS a == policyID_CS b)
         && (sellingToken_CS a == sellingToken_CS b)
         && (sellingToken_TN a == sellingToken_TN b)
@@ -201,6 +188,8 @@ readStringDecodedAsPolicyNFTRedeemer encoded = do
     return result
 
 -- readStringDecodedAsMarketValidatorDatum "{\"getDatum\":\"d8799f581cabfff883edcf7a2e38628015cebb72952e361b2c8a2262f7daf9c16e581c97646926632d88c2e18370b48b79929b733e51709b8cbdce65690b02581c018d8b7fd7241e65b515e2ece48fa453fd14f7e6319ebefbdcd3c6374443494458182c1a001a3f39ff\"}"
+--
+
 readStringDecodedAsMarketValidatorDatum :: P.String -> P.IO SimpleSale
 readStringDecodedAsMarketValidatorDatum encoded = do
     raw <- OffChainHelpers.readStringDecodedAsDatum encoded
