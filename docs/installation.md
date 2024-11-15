@@ -468,14 +468,14 @@ After setting these variables, your application will be configured to communicat
 1. **Clone the Repository**
 
 ```
-git clone git@github.com:protofire/Cardano-SmartDB.git
-cd Cardano-SmartDB
+git clone git@github.com:protofire/Cardano-Simple-Marketplace.git
+cd Cardano-Simple-Marketplace
 ```
 
 2. **Navigate to example folder**
 
 ```
-cd example
+cd off-chain
 ```
 
 3. **Install Dependencies**
