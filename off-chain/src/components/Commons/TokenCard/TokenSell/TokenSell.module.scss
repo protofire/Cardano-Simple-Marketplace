@@ -21,6 +21,17 @@
     }
 }
 
+.invalidButton {
+    width: 4rem;
+    height: 2rem;
+    background-color: grey;
+    color: white;
+    font-weight: 600;
+    padding: 0.25rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s;
+}
+
 .inputContainer {
     display: flex;
     flex-direction: column;

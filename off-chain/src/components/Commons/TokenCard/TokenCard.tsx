@@ -1,15 +1,13 @@
 // TokenCard.tsx
-import React from 'react';
 import TokenItem from '@/components/Commons/TokenCard/TokenItem/TokenItem';
-import styles from './TokenCard.module.scss';
-
-import {
-    Token_With_Metadata_And_Amount,
-    TokenMetadataEntity,
-} from 'smart-db';
 import { MarketNFTEntity } from '@example/src/lib/SmartDB/Entities';
+import React from 'react';
+import { Token_With_Metadata_And_Amount, TokenMetadataEntity } from 'smart-db';
 import TokenBuy from './TokenBuy/TokenBuy';
+import styles from './TokenCard.module.scss';
 import TokenSell from './TokenSell/TokenSell';
+
+// TODO: agregar commentarios
 
 type MarketNFTEntityWithMetadata = {
     entity: MarketNFTEntity;
@@ -19,21 +17,35 @@ type MarketNFTEntityWithMetadata = {
 interface TokenCardProps {
     tokenToBuy?: MarketNFTEntityWithMetadata;
     tokenToSell?: Token_With_Metadata_And_Amount;
-    walletConnected: boolean;
     sell: boolean;
-    isOwnerToken?: boolean;
+    isWalletConnectorModalOpen: boolean;
+    setIsWalletConnectorModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isLoadingAnyTx: string | undefined; // Pass down from parent
+    setIsLoadingAnyTx: React.Dispatch<React.SetStateAction<string | undefined>>; // Pass down from parent
 }
 
-const TokenCard: React.FC<TokenCardProps> = ({ tokenToBuy, tokenToSell, walletConnected, sell, isOwnerToken }) => {
+const TokenCard: React.FC<TokenCardProps> = ({ tokenToBuy, tokenToSell, sell, isWalletConnectorModalOpen, setIsWalletConnectorModalOpen, isLoadingAnyTx, setIsLoadingAnyTx }) => {
     const token = sell ? tokenToSell : tokenToBuy?.metadata;
 
     return (
         <div className={styles.tokenCard}>
-            <TokenItem token={token!} />
+            <TokenItem tokenToBuy={tokenToBuy} tokenToSell={tokenToSell} sell={sell} />
             {!sell ? (
-                <TokenBuy tokenToBuy={tokenToBuy!} walletConnected={walletConnected} isOwnerToken={isOwnerToken!} />
+                <TokenBuy
+                    tokenToBuy={tokenToBuy!}
+                    isWalletConnectorModalOpen={isWalletConnectorModalOpen}
+                    setIsWalletConnectorModalOpen={setIsWalletConnectorModalOpen}
+                    isLoadingAnyTx={isLoadingAnyTx}
+                    setIsLoadingAnyTx={setIsLoadingAnyTx}
+                />
             ) : (
-                <TokenSell tokenToSell={tokenToSell!} />
+                <TokenSell
+                    tokenToSell={tokenToSell!}
+                    isWalletConnectorModalOpen={isWalletConnectorModalOpen}
+                    setIsWalletConnectorModalOpen={setIsWalletConnectorModalOpen}
+                    isLoadingAnyTx={isLoadingAnyTx}
+                    setIsLoadingAnyTx={setIsLoadingAnyTx}
+                />
             )}
         </div>
     );

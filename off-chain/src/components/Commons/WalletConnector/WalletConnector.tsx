@@ -8,13 +8,15 @@ import WalletList from './WalletList/WalletList';
 
 import { HiUserCircle } from 'react-icons/hi';
 
-const WalletConnector: React.FC = () => {
+interface WalletConnectorProps {
+  isWalletConnectorModalOpen: boolean;
+  setIsWalletConnectorModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const WalletConnector: React.FC<WalletConnectorProps> = ({ isWalletConnectorModalOpen, setIsWalletConnectorModalOpen }) => {
   //--------------------------------------
   // State to store the private key entered by the user (used for wallet connection)
   const [privateKey, setPrivateKey] = useState<string>();
-  //--------------------------------------
-  // State to control the visibility of the wallet connection modal
-  const [isWalletConnectorModalOpen, setIsWalletConnectorModalOpen] = useState(false);
   //--------------------------------------
   // Destructure necessary functions and state from wallet actions
   const {
