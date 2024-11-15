@@ -3,7 +3,6 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleContexts #-}
--- {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE NumericUnderscores #-}
@@ -19,45 +18,46 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 --------------------------------------------------------------------------------
-{- HLINT ignore "Use camelCase"               -}
-{- HLINT ignore "Reduce duplication"          -}
+-- Module Overview
+-- This module defines various types and utilities for a marketplace smart contract
+-- implementation on Cardano. It includes data structures for representing sales,
+-- redeemers for minting/burning policies, and utility functions for encoding/decoding.
 --------------------------------------------------------------------------------
 module Types where
 
---------------------------------------------------------------------------------2
--- Import Externos
---------------------------------------------------------------------------------2
+--------------------------------------------------------------------------------
+-- External Imports
+--------------------------------------------------------------------------------
 
+-- Import helper functions, Plutus-specific libraries, and standard Haskell libraries.
 import qualified Helpers.OffChain as OffChainHelpers
 import qualified Plutus.V1.Ledger.Value as LedgerValue
 import qualified Plutus.V2.Ledger.Api as LedgerApiV2
 import qualified Plutus.V2.Ledger.Contexts as LedgerContextV2
 import qualified PlutusTx
-import PlutusTx.Prelude hiding (unless)
+import PlutusTx.Prelude hiding (unless) -- Import Plutus Prelude, excluding specific functions.
 import qualified Prelude as P
 
---------------------------------------------------------------------------------2
--- Import Internos
---------------------------------------------------------------------------------2
+--------------------------------------------------------------------------------
+-- Type Aliases
+--------------------------------------------------------------------------------
 
---------------------------------------------------------------------------------2
--- Modulo
---------------------------------------------------------------------------------2
-
--- TODO: add comments
-
+-- Define type aliases for readability and reusability throughout the module.
 type CS = LedgerApiV2.CurrencySymbol
 type TN = LedgerApiV2.TokenName
-
 type NFT = LedgerValue.AssetClass
 type WalletPaymentPKH = LedgerApiV2.PubKeyHash
 type StakeCredentialPubKeyHash = LedgerApiV2.PubKeyHash
 
---------------------------------------------------------------------------------2
+--------------------------------------------------------------------------------
+-- Redeemer Types for Minting and Burning Policies
+--------------------------------------------------------------------------------
 
+-- Define redeemer types for minting and burning tokens.
 data PolicyRedeemerMintIDType = PolicyRedeemerMintIDType
     deriving (P.Show, P.Eq)
 
+-- Custom equality implementation for mint ID redeemer.
 instance Eq PolicyRedeemerMintIDType where
     {-# INLINEABLE (==) #-}
     PolicyRedeemerMintIDType == PolicyRedeemerMintIDType = True
@@ -67,23 +67,27 @@ PlutusTx.unstableMakeIsData ''PolicyRedeemerMintIDType
 data PolicyRedeemerBurnIDType = PolicyRedeemerBurnIDType
     deriving (P.Show, P.Eq)
 
+-- Custom equality implementation for burn ID redeemer.
 instance Eq PolicyRedeemerBurnIDType where
     {-# INLINEABLE (==) #-}
     PolicyRedeemerBurnIDType == PolicyRedeemerBurnIDType = True
 
 PlutusTx.unstableMakeIsData ''PolicyRedeemerBurnIDType
 
+-- Combined redeemer type for both minting and burning policies.
 data PolicyIDRedeemer
     = PolicyRedeemerMintID PolicyRedeemerMintIDType
     | PolicyRedeemerBurnID PolicyRedeemerBurnIDType
     deriving (P.Show, P.Eq)
 
+-- Custom equality implementation for the combined redeemer type.
 instance Eq PolicyIDRedeemer where
     {-# INLINEABLE (==) #-}
     PolicyRedeemerMintID rmtx1 == PolicyRedeemerMintID rmtx2 = rmtx1 == rmtx2
     PolicyRedeemerBurnID rmtx1 == PolicyRedeemerBurnID rmtx2 = rmtx1 == rmtx2
     _ == _ = False
 
+-- Associate the redeemer constructors with indices for serialization.
 PlutusTx.makeIsDataIndexed
     ''PolicyIDRedeemer
     [ ('PolicyRedeemerMintID, 1)
@@ -91,16 +95,25 @@ PlutusTx.makeIsDataIndexed
     ]
 
 --------------------------------------------------------------------------------
+-- Redeemer Types for Market Actions
+--------------------------------------------------------------------------------
 
+-- Define redeemer for market-specific actions (e.g., Buy, Withdraw).
 data MarketRedeemer = Buy | Withdraw
     deriving (P.Show, P.Eq)
 
+-- Associate market redeemer constructors with indices for serialization.
 PlutusTx.makeIsDataIndexed ''MarketRedeemer [('Buy, 0), ('Withdraw, 1)]
 
---------------------------------------------------------------------------------2
+--------------------------------------------------------------------------------
+-- Marketplace Sale Data Structure
+--------------------------------------------------------------------------------
+
+-- Marketplace version constant.
 marketPlaceVersion :: Integer
 marketPlaceVersion = 1
 
+-- Define the data structure for a simple sale in the marketplace.
 data SimpleSale = SimpleSale
     { version :: Integer
     , sellerPaymentPKH :: LedgerApiV2.PubKeyHash
@@ -112,20 +125,16 @@ data SimpleSale = SimpleSale
     }
     deriving (P.Show, P.Eq)
 
+-- Associate the SimpleSale constructor with an index for serialization.
 PlutusTx.makeIsDataIndexed
     ''SimpleSale
     [ ('SimpleSale, 0)
     ]
 
+-- Inlineable function to create a SimpleSale instance.
 {-# INLINEABLE mkTypeSimpleSale #-}
 mkTypeSimpleSale ::
-    LedgerApiV2.PubKeyHash ->
-    CS ->
-    CS ->
-    TN ->
-    Integer ->
-    Integer ->
-    SimpleSale
+    LedgerApiV2.PubKeyHash -> CS -> CS -> TN -> Integer -> Integer -> SimpleSale
 mkTypeSimpleSale _dSellerPaymentPKH _dPolicyID_CS _dSellingToken_CS _dSellingToken_TN _dPriceOfAsset _dMinADA =
     SimpleSale
         { version = marketPlaceVersion
@@ -138,7 +147,10 @@ mkTypeSimpleSale _dSellerPaymentPKH _dPolicyID_CS _dSellingToken_CS _dSellingTok
         }
 
 --------------------------------------------------------------------------------
+-- Utility Functions
+--------------------------------------------------------------------------------
 
+-- Parse a SimpleSale from a transaction output's datum.
 {-# INLINEABLE parseSimpleSale #-}
 parseSimpleSale :: LedgerApiV2.TxOut -> LedgerApiV2.TxInfo -> Maybe SimpleSale
 parseSimpleSale o info = case LedgerContextV2.txOutDatum o of
@@ -148,6 +160,7 @@ parseSimpleSale o info = case LedgerContextV2.txOutDatum o of
         LedgerApiV2.Datum d <- LedgerContextV2.findDatum dh info
         PlutusTx.fromBuiltinData d
 
+-- Check if two SimpleSale instances are equal.
 {-# INLINEABLE isEqSimpleSale #-}
 isEqSimpleSale :: SimpleSale -> SimpleSale -> P.Bool
 isEqSimpleSale a b =
@@ -160,43 +173,41 @@ isEqSimpleSale a b =
         && (minADA a == minADA b)
 
 --------------------------------------------------------------------------------
+-- Hardcoded Token Name for Market Policy
+--------------------------------------------------------------------------------
 
 {-# INLINEABLE marketID_TN #-}
 marketID_TN :: LedgerApiV2.TokenName
 marketID_TN = LedgerApiV2.TokenName "MarketPolicyID"
 
 --------------------------------------------------------------------------------
+-- JSON Decoding Utilities
+--------------------------------------------------------------------------------
 
--- readStringDecodedAsPolicyIDRedeemer "{\"getRedeemer\":\"d87a9fd87980ff\"}"
-
+-- Decode a PolicyIDRedeemer from a JSON string.
 readStringDecodedAsPolicyIDRedeemer :: P.String -> P.IO PolicyIDRedeemer
 readStringDecodedAsPolicyIDRedeemer encoded = do
     raw <- OffChainHelpers.readStringDecodedAsRedeemer encoded
     P.putStrLn $ "Raw: " ++ P.show raw
-    let
-        result = LedgerApiV2.unsafeFromBuiltinData @PolicyIDRedeemer (LedgerApiV2.getRedeemer raw)
+    let result = LedgerApiV2.unsafeFromBuiltinData @PolicyIDRedeemer (LedgerApiV2.getRedeemer raw)
     P.putStrLn $ "Result: " ++ P.show result
     return result
 
--- readStringDecodedAsPolicyNFTRedeemer "{\"getRedeemer\":\"d87a9fd87980ff\"}"
-
+-- Decode a MarketRedeemer from a JSON string.
 readStringDecodedAsPolicyNFTRedeemer :: P.String -> P.IO MarketRedeemer
 readStringDecodedAsPolicyNFTRedeemer encoded = do
     raw <- OffChainHelpers.readStringDecodedAsRedeemer encoded
     P.putStrLn $ "Raw: " ++ P.show raw
-    let
-        result = LedgerApiV2.unsafeFromBuiltinData @MarketRedeemer (LedgerApiV2.getRedeemer raw)
+    let result = LedgerApiV2.unsafeFromBuiltinData @MarketRedeemer (LedgerApiV2.getRedeemer raw)
     P.putStrLn $ "Result: " ++ P.show result
     return result
 
--- readStringDecodedAsMarketValidatorDatum "{\"getDatum\":\"d8799f581cabfff883edcf7a2e38628015cebb72952e361b2c8a2262f7daf9c16e581c97646926632d88c2e18370b48b79929b733e51709b8cbdce65690b02581c018d8b7fd7241e65b515e2ece48fa453fd14f7e6319ebefbdcd3c6374443494458182c1a001a3f39ff\"}"
---
-
+-- Decode a SimpleSale datum from a JSON string.
 readStringDecodedAsMarketValidatorDatum :: P.String -> P.IO SimpleSale
 readStringDecodedAsMarketValidatorDatum encoded = do
     raw <- OffChainHelpers.readStringDecodedAsDatum encoded
     P.putStrLn $ "Raw: " ++ P.show raw
-    let
-        result = LedgerApiV2.unsafeFromBuiltinData @SimpleSale (LedgerApiV2.getDatum raw)
+    let result = LedgerApiV2.unsafeFromBuiltinData @SimpleSale (LedgerApiV2.getDatum raw)
     P.putStrLn $ "Result: " ++ P.show result
     return result
+

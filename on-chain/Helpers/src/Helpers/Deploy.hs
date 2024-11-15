@@ -99,7 +99,6 @@ readMintingPolicy path file = do
 -- ESCRIBE Y LEE COMPILED CODE A ARCHIVO
 --------------------------------------------------------------------------------2
 
--- TODO mover a offchain helpers
 serializableToScript :: CodecSerialise.Serialise a => a -> CardanoApi.PlutusScript CardanoApi.PlutusScriptV2
 serializableToScript = CardanoApiShelley.PlutusScriptSerialised . BSS.toShort . BSL.toStrict . CodecSerialise.serialise
 

@@ -1,18 +1,14 @@
+
 // TokenSell.tsx
-import LoaderButton from '@/components/Commons/LoaderButton/LoaderButton';
-import React from 'react';
-import ModalTransaction from '../../ModalTransaction/ModalTransaction';
-import styles from './TokenSell.module.scss';
-import { TokenSellProps, useTokenSell } from './useTokenSell';
+import LoaderButton from '@/components/Commons/LoaderButton/LoaderButton'; // Import LoaderButton for displaying loading indicator on the sell button
+import React from 'react'; // React library
+import ModalTransaction from '../../ModalTransaction/ModalTransaction'; // Import ModalTransaction for handling transaction status display
+import styles from './TokenSell.module.scss'; // Import styles for TokenSell component
+import { TokenSellProps, useTokenSell } from './useTokenSell'; // Import TokenSellProps for prop types and useTokenSell hook for handling logic
 
-// TODO: ya no hace falta [inputValues, setInputValues] = useState<{ [key: string]: string }>({});
-// Por que ahora al estar separado en un nuevo componente cada uno tiene su estado, y ya no se pisan entre si como antes
-// entonces no hace falta el array o list, con un solo valor para input y uno solo para el boolean si hay tx esta bien
-
-// Se complica que ahora es mas complejo manejar el estado general si hay any tx, para no permitir mas de una tx al mismo tiempo
-// para eso la pagina principal sell tiene ese estado y enviar el setter y el estado a los subcomponentes, cosa de que desde alli se pueda setear y revisar ese estado
-
+// TokenSell component, responsible for handling the sale of tokens
 const TokenSell: React.FC<TokenSellProps> = ({ tokenToSell, isWalletConnectorModalOpen, setIsWalletConnectorModalOpen, isLoadingAnyTx, setIsLoadingAnyTx }) => {
+    // Use the custom hook useTokenSell to manage logic related to token selling
     const {
         walletStore,
         inputValue,
@@ -36,34 +32,46 @@ const TokenSell: React.FC<TokenSellProps> = ({ tokenToSell, isWalletConnectorMod
 
     return (
         <section>
+            {/* Input field for entering amount to sell */}
             <div className={styles.inputContainer}>
-                <input value={inputValue} onChange={handleInputChange} type="text" placeholder="Lovelace" className={styles.input} />
+                <input 
+                    value={inputValue} 
+                    onChange={handleInputChange} 
+                    type="text" 
+                    placeholder="Lovelace" 
+                    className={styles.input} 
+                />
+                {/* Button to connect wallet if not already connected */}
                 {!walletStore.isConnected ? (
                     <button className={styles.invalidButton} onClick={() => setIsWalletConnectorModalOpen(true)}>
                         Connect
                     </button>
                 ) : (
+                    // Sell button is conditionally enabled based on validity of input and transaction loading state
                     <button
                         className={
                             !isValidInput || !(isLoadingAnyTx === undefined || isLoadingAnyTx == tokenToSell.CS + tokenToSell.TN_Hex) ? styles.invalidButton : styles.sellButton
                         }
                         disabled={!isValidInput || !(isLoadingAnyTx === undefined || isLoadingAnyTx == tokenToSell.CS + tokenToSell.TN_Hex)}
-                        onClick={handleBtnSellTx}
+                        onClick={handleBtnSellTx} // Trigger token sell transaction
                     >
-                        Sell {isLoadingTxSell && <LoaderButton />}
+                        Sell {isLoadingTxSell && <LoaderButton />} {/* Display loader while selling */}
                     </button>
                 )}
             </div>
+
+            {/* Modal to display transaction status (success, error, confirmation) */}
             <ModalTransaction
-                isOpen={isTxModalOpen}
-                onRequestClose={() => setIsTxModalOpen(false)}
-                txMessage={txMessage}
-                txHash={txHash!}
-                txConfirmed={txConfirmed}
-                isTxError={isTxError}
+                isOpen={isTxModalOpen} // Modal open state
+                onRequestClose={() => setIsTxModalOpen(false)} // Close modal on request
+                txMessage={txMessage} // Message to show in the modal
+                txHash={txHash!} // Transaction hash for the sale
+                txConfirmed={txConfirmed} // Boolean indicating whether the transaction was confirmed
+                isTxError={isTxError} // Boolean indicating if there was an error in the transaction
             />
         </section>
     );
 };
 
-export default TokenSell;
+export default TokenSell; // Export TokenSell component for use in other parts of the application
+

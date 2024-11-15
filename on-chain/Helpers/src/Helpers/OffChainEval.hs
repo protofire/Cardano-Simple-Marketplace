@@ -416,7 +416,6 @@ evalAndSubmitTx nameEndPoint listOfMintingScripts listOfValidators showDatum loo
             let decoratedTxOut = OnChainHelpers.fromJust decoratedTxOut'
             let script' = decoratedTxOut ControlLens.^? LedgerTx.decoratedTxOutReferenceScript
             let script = OnChainHelpers.fromJust script'
-            -- TODO: reemplaze esto: return $ P.maybe Nothing (Just . Ledger.scriptHash) script
             return ((Just . Ledger.scriptHash) P.=<< script)
         --------------------
         getReferenceScriptHashFromLedgerTxOut :: Ledger.TxOut -> PlutusContract.Contract w s DataText.Text (Maybe LedgerApiV2.ScriptHash)
@@ -524,7 +523,7 @@ evalAndSubmitTx nameEndPoint listOfMintingScripts listOfValidators showDatum loo
                          -- "Datum: " ++ P.show datum,
                          "Datum: "
                        , P.show datumTypeStr
-                       , "ReferenceScript: " ++ P.show refScriptHash -- TODO
+                       , "ReferenceScript: " ++ P.show refScriptHash -- 
                        ]
         ------------------
         formatTxInInfos :: P.String -> [LedgerApiV2.TxInInfo] -> PlutusContract.Contract w s DataText.Text [P.String]
@@ -557,7 +556,7 @@ evalAndSubmitTx nameEndPoint listOfMintingScripts listOfValidators showDatum loo
                          -- "Datum: " ++ P.show datum,
                          "Datum: "
                        , P.show datumTypeStr
-                       , "ReferenceScript: " ++ P.show refScriptHash -- TODO
+                       , "ReferenceScript: " ++ P.show refScriptHash -- 
                        ]
         ------------------
         formatTxOuts :: [(Ledger.TxOut, Ledger.TxOutRef)] -> PlutusContract.Contract w s DataText.Text [P.String]

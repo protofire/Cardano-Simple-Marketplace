@@ -464,11 +464,9 @@ getRight (P.Left _)  = P.error "getRight: Left"
 
 --------------------------------------------------------------------------------2
 
--- TODO: Usa plutus-1.1.0
 addressToCardanoAddress :: Ledger.NetworkId -> LedgerAddress.Address -> LedgerAddress.CardanoAddress
 addressToCardanoAddress network add = getRight $ LedgerTxCardanoAPI.toCardanoAddressInEra network add
 
--- TODO: Usa plutus-1.1.0
 cardanoAddressToAddress :: LedgerAddress.CardanoAddress -> LedgerAddress.Address
 cardanoAddressToAddress = Ledger.toPlutusAddress
 

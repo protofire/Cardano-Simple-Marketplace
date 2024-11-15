@@ -716,7 +716,6 @@ flattenValueWithoutZeros (LedgerValue.Value !mp) =
 {-# INLINEABLE isEqFlattenValue #-}
 isEqFlattenValue :: [(LedgerApiV2.CurrencySymbol, LedgerApiV2.TokenName, Integer)] -> [(LedgerApiV2.CurrencySymbol, LedgerApiV2.TokenName, Integer)] -> Bool
 isEqFlattenValue a b = TxBuiltins.serialiseData (LedgerApiV2.toBuiltinData a) == TxBuiltins.serialiseData (LedgerApiV2.toBuiltinData b)
-    -- TODO : check if this is correct
 
 ---------------------------------------------------
 
@@ -976,7 +975,7 @@ calculateMinADA !numAssets !sumAssetNameLengths !numPIDs !isHash =
 
         !minADA = max minUTxOValue sizeCoins
 
-    in  TxRatio.truncate (TxRatio.unsafeRatio (130 * minADA) 100) -- TODO: 130% of the minimum UTxO value
+    in  TxRatio.truncate (TxRatio.unsafeRatio (130 * minADA) 100) --  130% of the minimum UTxO value
 
 {-# INLINEABLE calculateNumAssetsAndPIDS #-}
 calculateNumAssetsAndPIDS :: LedgerApiV2.Value -> (Integer, Integer, Integer)

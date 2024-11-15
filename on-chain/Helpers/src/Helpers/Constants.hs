@@ -24,7 +24,6 @@ import qualified Plutus.V2.Ledger.Api         as LedgerApiV2
 -- Modulo
 --------------------------------------------------------------------------------2
 
--- TODO: Usar plutus-1.1.0
 networkId :: Ledger.NetworkId
 networkId = CardanoNodeEmulatorParams.testnet
 

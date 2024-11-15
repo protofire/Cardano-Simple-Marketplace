@@ -72,7 +72,6 @@ uTCTimeToLedgerPosixTime utcTime = LedgerApiV2.POSIXTime $ P.floor $ uTCTimeToPo
 getAmountWithMax :: P.String -> Ledger.AssetClass -> Integer -> Integer -> P.IO Integer
 getAmountWithMax unit_UI unit_AC minAmount maxAmount = do
     let unit_Str = unit_UI
-    -- TODO: mostrar el hex bien
     -- ++ " ("
     -- if LedgerApiV2.adaSymbol /= fst (LedgerValue.unAssetClass unit_AC) then
     --     let
@@ -105,7 +104,6 @@ getAmountWithMax unit_UI unit_AC minAmount maxAmount = do
 getAmount :: P.String -> Ledger.AssetClass -> Integer -> P.IO Integer
 getAmount unit_UI unit_AC minAmount = do
     let unit_Str = unit_UI
-    -- TODO: mostrar el hex bien
     -- ++ " ("
     -- if LedgerApiV2.adaSymbol /= fst (LedgerValue.unAssetClass unit_AC) then
     --     let
@@ -169,7 +167,7 @@ getIntWithDefault fieldName def = do
                     P.putStrLn "--------------------------------"
                     getIntWithDefault fieldName def
         Nothing -> do
-            if P.null numberSrt -- TODO check length numberSrt == 0
+            if P.null numberSrt -- check length numberSrt == 0
                 then return def
                 else do
                     P.putStrLn "Invalid input, try again"

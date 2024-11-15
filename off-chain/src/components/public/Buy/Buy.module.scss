@@ -37,8 +37,11 @@
     justify-content: center;
     padding: 1rem;
 
-    @media (min-width: 1024px) {
-        grid-template-columns: repeat(5, 1fr);
+
+    @media (min-width: 16rem) and (min-height: 22rem) {
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(9, 1fr); /* Asegura que las filas tengan el mismo tamaño que las columnas */
+        gap: 1rem; /* Añade un espacio entre los elementos si es necesario */
         justify-content: center;
     }
 }

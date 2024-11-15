@@ -11,6 +11,13 @@
     font-size: 1.125rem;
     font-weight: 600;
 }
+.tokenNameInscription{
+    display: flex;               
+    justify-content: center;    
+    align-items: center;       
+    object-fit: contain;      
+  }
+
 
 .tokenAmount {
     text-align: center;

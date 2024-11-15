@@ -108,8 +108,7 @@ mintNFTTx ref out val pkh =
 mintNFT :: LedgerApiV2.PubKeyHash -> Model.Run LedgerValueV1.AssetClass
 mintNFT u = do
     utxos <- Model.utxoAt u
-    let
-        [(ref, out)] = utxos
+    let [(ref, out)] = utxos
         currSymbol = Model.scriptCurrencySymbol (nftScript ref)
         mintingValue = LedgerApiV2.singleton currSymbol tokenNameNFT 1
     Model.submitTx u $ mintNFTTx ref out mintingValue u
@@ -128,8 +127,7 @@ testMintNFTTwice :: Model.Run ()
 testMintNFTTwice = do
     [u1, _, _, _] <- setupUsers
     utxos <- Model.utxoAt u1
-    let
-        [(ref, out)] = utxos
+    let [(ref, out)] = utxos
         mintingValue = LedgerApiV2.singleton (Model.scriptCurrencySymbol (nftScript ref)) tokenNameNFT 1
         tx = mintNFTTx ref out mintingValue u1
     Model.submitTx u1 tx
@@ -162,8 +160,7 @@ sellNFTx sp dat policy val =
 --
 sellNFT :: LedgerApiV2.PubKeyHash -> LedgerValueV1.AssetClass -> Model.Run (ContractValidator, PolicyID, SimpleSale)
 sellNFT u1 nftAC = do
-    let
-        nftV = LedgerValueV1.assetClassValue nftAC 1
+    let nftV = LedgerValueV1.assetClassValue nftAC 1
         callOptionValidatorHash = validatorHash' marketValidator
         policyId = policyIDScript callOptionValidatorHash
         -- now = 2000
@@ -181,7 +178,8 @@ sellNFT u1 nftAC = do
         ---------------------
         datum =
             SimpleSale
-                { sellerPaymentPKH = u1
+                { version = marketPlaceVersion
+                , sellerPaymentPKH = u1
                 , policyID_CS = policyID_CurrSym
                 , sellingToken_CS = sellingToken_CurrSym
                 , sellingToken_TN = tokenNameNFT
@@ -192,8 +190,7 @@ sellNFT u1 nftAC = do
         mintingTxValues = policyID_Mint_Value
 
     sp <- Model.spend u1 userSpendValue
-    let
-        tx = sellNFTx sp datum policyId (userSpendValue <> mintingTxValues)
+    let tx = sellNFTx sp datum policyId (userSpendValue <> mintingTxValues)
     -- traceM $ show datum
     Model.submitTx u1 tx
 

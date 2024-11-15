@@ -7,3 +7,6 @@
 * [Usage](docs/usage.md)
 
 * [Testing](docs/tests.md)
+
+* [On-chain](docs/onchain.md)
+

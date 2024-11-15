@@ -119,8 +119,6 @@ utxos_in_address() {
 }
 
 select_amount_ada() {
-    # TODO: get total balance and check if it is enough
-    local amount_ada
     while true; do
         read -p "Enter the amount of ADA (minimum 1000000, default 2000000): " amount_ada
         if [[ -z "$amount_ada" ]]; then
