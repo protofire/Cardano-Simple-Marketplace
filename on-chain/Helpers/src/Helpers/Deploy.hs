@@ -60,7 +60,9 @@ import qualified Helpers.OffChain                  as OffChainHelpers
 
 deployValidator :: P.String -> P.String -> LedgerApiV2.Validator -> P.IO (Either (CardanoApi.FileError ()) ())
 deployValidator path file validator = do
-    OffChainHelpers.writeValidator   path (file ++ ".plutus") validator
+    val <- OffChainHelpers.writeValidator   path (file ++ ".plutus") validator
+    P.putStrLn $ "Serialized script to: " ++ path SystemFilePathPosix.</> file ++ ".plutus"
+    return val
 
 deployValidatorHash :: P.String -> P.String -> LedgerApiV2.ValidatorHash -> P.IO ()
 deployValidatorHash path file hash = do
