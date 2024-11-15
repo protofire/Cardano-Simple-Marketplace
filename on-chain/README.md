@@ -51,6 +51,9 @@ understanding, building, and deploying Plutus smart contracts effectively.
       - [Make transactions with the examples](#make-transactions-with-the-examples)
     - [Using a Terminal](#using-a-terminal)
 
+
+TODO: UPDATE README, check docs folder
+
 ## Helpers Library
 
 The Helpers Library, located in the directory `./cardano-smart-contracts-examples/Helpers` is a set of

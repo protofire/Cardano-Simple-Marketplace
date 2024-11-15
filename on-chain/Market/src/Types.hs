@@ -44,6 +44,8 @@ import qualified Prelude as P
 -- Modulo
 --------------------------------------------------------------------------------2
 
+-- TODO: add comments
+
 type CS = LedgerApiV2.CurrencySymbol
 type TN = LedgerApiV2.TokenName
 
