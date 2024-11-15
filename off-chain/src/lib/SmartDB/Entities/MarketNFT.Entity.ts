@@ -21,6 +21,10 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
     // The token name for the minting policy.
     _NET_id_TN: string = mintingPolicyID_TN;
 
+    // The version of the marketPlace
+    @Convertible({ isForDatum: true })
+    version!: bigint;
+
     // The seller's payment public key hash, mapped to the datum.
     @Convertible({ isForDatum: true })
     sellerPaymentPKH!: PaymentKeyHash;

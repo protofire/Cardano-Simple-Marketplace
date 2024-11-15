@@ -61,6 +61,7 @@ export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
     public static MongoModel() {
         // Interface that defines the structure of the MongoDB document for this entity.
         interface Interface {
+            version: BigInt;
             sellerPaymentPKH: PaymentKeyHash;
             policyID_CS: CS;
             sellingToken_CS: CS;
@@ -71,12 +72,13 @@ export class MarketNFTEntityMongo extends BaseSmartDBEntityMongo {
 
         // Schema definition for the MongoDB collection, specifying the types and requirements for each field.
         const schema = new Schema<Interface>({
+            version: { type: String, required: true },
             sellerPaymentPKH: { type: String, required: true },
             policyID_CS: { type: String, required: true },
             sellingToken_CS: { type: String, required: true },
             sellingToken_TN: { type: String, required: true },
-            priceOfAsset: { type: Number, required: true },
-            minADA: { type: Number, required: true },
+            priceOfAsset: { type: String, required: true },
+            minADA: { type: String, required: true },
         });
 
         // If the model already exists in the database, use it; otherwise, create a new model.
