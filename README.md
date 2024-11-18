@@ -131,6 +131,11 @@ For detailed documentation, please visit our
 Refer to [Installation](docs/installation.md) for detailed installation
 instructions.
 
+## Marketplace Smart Contracts (On-chain code)
+
+Refer to [On-chain](docs/onchain.md) for detailed about testing, code and
+deploy of smart Contracts.
+
 ## Usage
 
 For information on how to use this example project, including setting up
