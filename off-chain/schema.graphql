@@ -8,10 +8,15 @@ directive @especialType(typeName:String!) on FIELD
 directive @default(defaultValue:String!) on FIELD
 directive @convertible(params: [String]) on FIELD
 
-type Free @smartDBEntity {
-    fdValue: Int @nullable @convertible(params:["isForDatum: true"])
+type MarketNFT @smartDBEntity  @especialImports(fromSmart_db:["type CS", "type TN"], fromLucid_cardano:["type PaymentKeyHash"]) @index(indexName:["sellerPaymentPKH"]) {
+    version: String @especialType(typeName:"bigint") @convertible(params:["isForDatum: true"])
+    sellerPaymentPKH: String @especialType(typeName:"PaymentKeyHash") @convertible(params:["isForDatum: true"])
+    policyID_CS: String @especialType(typeName:"CS") @convertible(params:["isForDatum: true"])
+    sellingToken_CS: String @especialType(typeName:"CS") @convertible(params:["isForDatum: true"])
+    sellingToken_TN: String @especialType(typeName:"TN") @convertible(params:["isForDatum: true"])
+    priceOfAsset: String @especialType(typeName:"bigint") @convertible(params:["isForDatum: true"])
+    minADA: String @especialType(typeName:"bigint") @convertible(params:["isForDatum: true"])
 }
-
 
 type Query @resolvers {
     not_used: String

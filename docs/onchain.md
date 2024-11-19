@@ -3,18 +3,11 @@
 This document outlines the on-chain structure and scripts used in the Cardano Simple Marketplace project, detailing the Smart Contracts and the deployment process.
 #Table of Contents
 
-- [Project Structure](#project-structure)
-   - [Market Folder](#market-folder)
-     - [Policy ID](#policy-id)
-     - [Policy NFT](#nft-policy)
-     - [MarketNFT Validator](#marketnft-validator)
-   - [Scripts Folder](#scripts-folder)
-     - [cli.sh](#scripts-cli.sh)
-- [Key Functions of `cli.sh`](#key-functions-of-clish)
-   - [Deploy Policies](#deploy-policies)
-   - [Deploy Validator](#deploy-validator)
-   - [Testing](#testing)
-- [Conclusion](#conclusion)
+- [Smart Contracts](#smart-contracts)
+  - [Project Structure](#project-structure)
+    - [Market Folder](#market-folder)
+    - [Scripts Folder](#scripts-folder)
+    - [Key Functions of `cli.sh`:](#key-functions-of-clish)
 ## Project Structure
 
 ### Market Folder
@@ -46,5 +39,7 @@ In the **`scripts`** folder, the **`cli.sh`** script is included, allowing devel
 - **Deploy Policies**: Deploys the **ID Policy** and **NFT Policy** to the blockchain. These policies are used for minting and managing NFT tokens in the marketplace.
 - **Deploy Validator**: Deploys the **MarketNFT Validator**, enabling the marketplace's buy, sell, and withdraw functionality.
 - **Testing**: The script includes commands to test the deployed contracts, ensuring that the marketplace functions as expected with the on-chain logic.
+
+![Deploy Smart Contract](../images/deploy_smart_contract.gif)
 
 This on-chain setup ensures that the Cardano Simple Marketplace can function seamlessly, managing token listings, purchases, sales, and withdrawals in a secure, decentralized environment.
