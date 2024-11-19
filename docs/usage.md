@@ -1,6 +1,13 @@
 ## Table of Contents
 - [Table of Contents](#table-of-contents)
 - [Usage](#usage)
+  - [**Connect Wallet**:](#connect-wallet)
+  - [**Browse and View Tokens**:](#browse-and-view-tokens)
+  - [**Buy Tokens**:](#buy-tokens)
+  - [**Sell Tokens**:](#sell-tokens)
+  - [**Withdraw Tokens from Sale**:](#withdraw-tokens-from-sale)
+  - [**Transaction Feedback**:](#transaction-feedback)
+  - [**Blockchain Sync Button**:](#blockchain-sync-button)
 - [Project Code Structure](#project-code-structure)
   - [Directories](#directories)
   - [Configuration and Contracts](#configuration-and-contracts)
@@ -26,6 +33,7 @@ The Cardano Simple Marketplace web application provides a seamless user experien
    - Upon visiting the homepage at `http://localhost:3000/`, users are prompted to connect their preferred Cardano wallet.
    - The wallet connection is essential for interacting with the marketplace and conducting transactions.
    - Supported wallets allow users to connect and authorize actions such as buying and selling tokens.
+![Connect to Wallet](../images/connect_to_wallet.gif)
 
 ### **Browse and View Tokens**:
    - Users can browse all tokens listed for sale in the marketplace.
@@ -40,16 +48,19 @@ The Cardano Simple Marketplace web application provides a seamless user experien
    - Users can select a token to purchase by clicking the **Buy** button next to the listed token.
    - The token price is shown in ADA, and the purchase transaction is initiated upon confirmation.
    - After initiating the buy action, users will be prompted to confirm the transaction through their connected wallet.
+![Buy Token](../images/buy_a_token.gif)
 
 ### **Sell Tokens**:
    - Users can list their own tokens for sale by clicking the **Sell** button.
    - To list a token, users must enter the amount they wish to sell and set a price in ADA.
    - Once the listing is confirmed, the token will appear in the marketplace as available for purchase.
+![Sell Token](../images/sell_token.gif)
 
 ### **Withdraw Tokens from Sale**:
    - Users who have previously listed tokens for sale can withdraw them from the marketplace.
    - By clicking the **Withdraw** button next to their listed token, users can remove their token from the marketplace.
    - This action is only available to the token creator (seller) and is enforced by the smart contract.
+![WithDraw Token](../images/withdraw_a_token.gif)
 
 ### **Transaction Feedback**:
    - After initiating a buy, sell, or withdraw action, users will see real-time feedback through modals indicating the status of the transaction.
@@ -57,6 +68,15 @@ The Cardano Simple Marketplace web application provides a seamless user experien
      - Transaction hash
      - Whether the transaction was successful or failed
      - Confirmation of the transaction once it has been processed on the blockchain
+     - 
+### **Blockchain Sync Button**:
+
+- The template includes a **Sync Button** to ensure your SmartDB database is always up-to-date with the latest information from the blockchain.  
+- This feature allows you to:
+  - **Synchronize data**: Pull the latest updates from the blockchain into your database.
+  - **Refresh lists**: Automatically update displayed data to reflect changes from recent transactions.
+  - **Monitor synchronization**: Users receive feedback during the syncing process, including success or error notifications.
+![Synchronize](../images/sync_button.gif)
 
 All of these actions require a connected wallet and are securely processed using Cardano's blockchain technology.
 ## Project Code Structure
