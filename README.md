@@ -36,7 +36,7 @@
   <p align="center">
     An simple marketplace for yours NFTs.
     <br />
-    <a href="https://protofire-docs.gitbook.io/developer-studio"><strong>Explore the docs »</strong></a>
+    <a href="https://protofire-docs.gitbook.io/smartdb/cardano-simple-marketplace"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <a href="https://youtu.be/C9Ge6xyf6-o">View Demo</a>
@@ -57,22 +57,26 @@ MongoDB and PostgreSQL backends.
 
 The application demonstrates how to use the Smart DB Library for managing
 tokens, metadata, and transactions in a Cardano-powered marketplace.
+
 ## Table of Contents
 
-- [Smart DB Library: Cardano Blockchain Integration Example](#smart-db-library-cardano-blockchain-integration-example)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Features](#features)
-  - [Entity Types and Pages](#entity-types-and-pages)
-  - [Documentation](#documentation)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Conclusion](#conclusion)
-  - [Contribution](#contribution)
-  - [License](#license)
-  - [Acknowledgements](#acknowledgements)
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
+- [Documentation](#documentation)
+- [Features](#features)
+- [Entity Types and Pages](#entity-types-and-pages)
+- [Documentation](#documentation-1)
+- [Installation](#installation)
+- [Marketplace Smart Contracts (On-chain code)](#marketplace-smart-contracts-on-chain-code)
+- [Usage](#usage)
+- [Conclusion](#conclusion)
+- [Contribution](#contribution)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
+## Documentation
 
+For detailed documentation, please visit our [Gitbook](https://protofire-docs.gitbook.io/smartdb/cardano-simple-marketplace).
 
 ## Features
 
