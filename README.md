@@ -69,6 +69,7 @@ tokens, metadata, and transactions in a Cardano-powered marketplace.
 - [Installation](#installation)
 - [Marketplace Smart Contracts (On-chain code)](#marketplace-smart-contracts-on-chain-code)
 - [Usage](#usage)
+- [Step by Step Guide](#step-by-step-guide)
 - [Conclusion](#conclusion)
 - [Contribution](#contribution)
 - [License](#license)
@@ -146,6 +147,10 @@ For information on how to use this example project, including setting up
 entities, configuring the backend, and handling API routes, please refer to our
 [Usage Guide](docs/usage.md).
 
+## Step by Step Guide
+
+Para obtener información sobre cómo construir este proyecto desde cero, incluyendo la configuración de las entidades, el backend y el manejo de rutas API, por favor consulta nuestra
+[Step-by-Step Guide](https://protofire-docs.gitbook.io/smartdb/smartdb-project-template/step-by-step).
 
 ## Conclusion
 
