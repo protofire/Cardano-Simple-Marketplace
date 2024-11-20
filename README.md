@@ -149,7 +149,7 @@ entities, configuring the backend, and handling API routes, please refer to our
 
 ## Step by Step Guide
 
-Para obtener información sobre cómo construir este proyecto desde cero, incluyendo la configuración de las entidades, el backend y el manejo de rutas API, por favor consulta nuestra
+For detailed instructions on building this project from scratch, including setting up entities, configuring the backend, and managing API routes, please refer to our
 [Step-by-Step Guide](https://protofire-docs.gitbook.io/smartdb/smartdb-project-template/step-by-step).
 
 ## Conclusion
