@@ -23,16 +23,17 @@
       - [Docker](#docker)
       - [WSL (Windows Subsystem for Linux)](#wsl-windows-subsystem-for-linux)
       - [Remote MongoDB Server](#remote-mongodb-server)
-  - [Installing PostgreSQLDB](#installing-postgresql)
+  - [Installing PostgreSQL](#installing-postgresql)
     - [Windows](#windows-3)
     - [macOS](#macos-2)
     - [Ubuntu](#ubuntu-2)
-    - [Setting up PostgreSQLDB connection string](#setting-up-postgresql-connection)
+    - [Setting up PostgreSQL connection](#setting-up-postgresql-connection)
       - [Localhost (default)](#localhost-default-1)
       - [Docker](#docker-1)
       - [WSL (Windows Subsystem for Linux)](#wsl-windows-subsystem-for-linux-1)
-      - [Remote PostgreSQLDB Server](#remote-postgresql-server)
+      - [Remote PostgreSQL Server](#remote-postgresql-server)
 - [Installation of the example Project](#installation-of-the-example-project)
+- [Installation of the Cardano-SmartDB-Scaffold](#installation-of-the-cardano-smartdb-scaffold)
 - [Environment Setup](#environment-setup)
 - [Run the Application in developer mode](#run-the-application-in-developer-mode)
 - [Build and Run Application](#build-and-run-application)
@@ -493,7 +494,7 @@ yarn
 In this example we are using the library package as a tar file.
 
 ```
-npm install ../smart-db.tgz --force
+npm install ./smart-db.tgz --force
 ```
 
 - **Note:** Ensure that the library was packed before.
