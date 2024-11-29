@@ -29,6 +29,12 @@ jobs:
     - name: List off-chain directory
       run: ls -la ./off-chain
 
+    - name: Debug logs
+      run: |
+        echo "Starting debug"
+        ls -la ./off-chain || echo "Directory ./off-chain not found"
+        echo "Debug complete"
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
