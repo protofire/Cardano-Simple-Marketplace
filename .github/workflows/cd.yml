@@ -24,7 +24,6 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         context: ./off-chain
-        file: ./off-chain/Dockerfile # Asegúrate de que apunte al Dockerfile correcto
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ github.ref_name }}
         build-args: |
