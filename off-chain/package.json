@@ -24,7 +24,6 @@
     "swagger-start": "NODE_ENV=production ts-node -P tsconfig.swagger.json ./_swagger/server.ts"
   },
   "dependencies": {
-    "@faker-js/faker": "^9.0.3",
     "easy-peasy": "^5.0.4",
     "lucid-cardano": "^0.10.10",
     "next": "^12.1.6",
@@ -41,6 +40,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@jest/expect": "^29.7.0",
     "@next/eslint-plugin-next": "^13.4.12",
     "@types/cors": "^2.8.13",
