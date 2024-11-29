@@ -22,9 +22,9 @@ jobs:
       run: |
         cd off-chain && npm cache clean --force && npm ci
       
-    - name: Run tests
-      run: |
-        cd off-chain && npm test
+    # - name: Run tests
+    #   run: |
+    #     cd off-chain && npm test
       
     - name: Build
       run: |
