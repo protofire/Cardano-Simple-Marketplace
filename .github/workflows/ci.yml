@@ -21,6 +21,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd off-chain
+        npm cache clean --force
         npm ci
       
     - name: Run tests
