@@ -14,16 +14,14 @@
     "clean": "rm -fr ./.next",
     "cleanAll": "rm -fr ./node_modules ./.next",
     "lint": "next lint",
-    "test-performance": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.performance.js --no-cache",
     "test-api": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --config=jest.config.api.js --no-cache",
     "test-api:watch": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --watch  --config=jest.config.api.js --no-cache",
     "test-api:coverage": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --config=jest.config.api.js --no-cache",
-    "test-concurrency": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand --config=jest.config.concurrency.js --no-cache",
-    "test-concurrency:update-comparision": "ts-node __tests__/concurrency/updateComparison.mjs",
     "standalone": "TS_NODE_PROJECT='tsconfig-for-standalone.json' ts-node ./src/__standalone__/minADA.ts",
-    "watchInstall": "chokidar \"./smart-db.tgz\" -c \"npm run dev:stop && npm install ./smart-db.tgz --force\"",
-    "swagger-dev": "ts-node -P tsconfig.server.json ./_swagger/server.ts",
-    "swagger-start": "NODE_ENV=production ts-node -P tsconfig.server.json ./_swagger/server.ts"
+    "smartDBInstall": "npm run dev:stop && npm install ./smart-db.tgz --force",
+    "watchSmartDBAndInstall": "chokidar \"./smart-db.tgz\" -c \"npm run smartDBInstall\"",
+    "swagger-dev": "ts-node -P tsconfig.swagger.json ./_swagger/server.ts",
+    "swagger-start": "NODE_ENV=production ts-node -P tsconfig.swagger.json ./_swagger/server.ts"
   },
   "dependencies": {
     "@faker-js/faker": "^9.0.3",
@@ -40,8 +38,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "tailwind": "^4.0.0",
-    "typeorm": "^0.3.20",
-    "typescript": "5.0.4"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@jest/expect": "^29.7.0",
@@ -76,6 +73,7 @@
     "tailwindcss": "^3.4.14",
     "ts-jest": "^29.2.5",
     "typescript": "5.2.2",
+    "uuid": "^11.0.3",
     "xlsx": "^0.18.5"
   }
 }

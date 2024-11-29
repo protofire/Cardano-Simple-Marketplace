@@ -42,7 +42,7 @@ export class MarketNFTEntity extends BaseSmartDBEntity {
     sellingToken_TN!: TN;
 
     // The price of the asset being sold, mapped to the datum.
-    @Convertible({ isForDatum: true })
+    @Convertible({ isForDatum: true, required: true })
     priceOfAsset!: bigint;
 
     // The minimum ADA required for the transaction, mapped to the datum.
